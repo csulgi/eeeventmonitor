@@ -131,7 +131,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">📺 홈쇼핑 3사 대표 행사 모니터링</div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 행사 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-16 17:11</div>
+  <div class="hd-ts">최종 업데이트 2026-07-16 17:17</div>
 </div>
 
 <div class="wrap">
@@ -152,6 +152,14 @@ details[open] summary::before{content:'▼'}
         <div class="sum-grid" id="sumGrid"></div>
       </div>
       <div id="sumMonthly" style="display:none"><div class="sum-grid" id="monthlyGrid"></div></div>
+    </details>
+  </div>
+
+  <!-- 오늘의 추천 -->
+  <div class="summary-box">
+    <details open>
+      <summary>💡 오늘의 추천 (Hmall 관점 · 최근 7일 기준)</summary>
+      <div id="recoBody" style="margin-top:12px"></div>
     </details>
   </div>
 
@@ -823,7 +831,88 @@ function buildCompare() {
     `<div style="font-size:11px;font-weight:700;color:#374151;margin:16px 0 6px">🎯 사이트별 차별 포인트</div>`+diff;
 }
 
+/* ── 💡 오늘의 추천 (A: 편성 갭 + D: 브랜드 모멘텀) ── */
+function _brandsInRow(r) {
+  const out=new Set();
+  for(const b of BRANDS_ALL){ if(r.event.includes(b)) out.add(canonBrand(b)); }
+  return out;
+}
+function buildRecommend() {
+  const el=document.getElementById('recoBody');
+  const all=allDatesAsc();
+  const recent=all.slice(-7);                    // 최근 7수집일
+  const prev=all.slice(-14,-7);                  // 그 이전 7수집일
+  const rRows=ALL_ROWS.filter(r=>recent.includes(r.date)&&r.type==='main');
+  const parts=[];
+
+  /* A. 편성 갭: 경쟁사(GS+CJ) vs Hmall 카테고리 비중 */
+  function catShare(rows) {
+    const cnt={}; let tot=0;
+    rows.forEach(r=>{const c=shortCat(r.category);
+      if(!c||c==='기타'||c==='혼합')return; cnt[c]=(cnt[c]||0)+1; tot++;});
+    const out={};
+    Object.entries(cnt).forEach(([c,n])=>out[c]=n/Math.max(tot,1)*100);
+    return out;
+  }
+  const compShare=catShare(rRows.filter(r=>r.site!=='Hmall'));
+  const hmShare  =catShare(rRows.filter(r=>r.site==='Hmall'));
+  const gaps=Object.entries(compShare)
+    .map(([c,p])=>({cat:c, comp:p, hm:hmShare[c]||0, gap:p-(hmShare[c]||0)}))
+    .filter(x=>x.gap>=8 && x.comp>=12)
+    .sort((a,b)=>b.gap-a.gap).slice(0,3);
+  const gapHtml=gaps.length
+    ? gaps.map(x=>`<div style="margin-bottom:5px;font-size:11.5px;color:#374151">
+        <b style="color:#1d4ed8">${x.cat}</b> — 경쟁사(GS·CJ) 배너의 <b>${Math.round(x.comp)}%</b> vs Hmall <b>${Math.round(x.hm)}%</b>
+        <span style="color:#dc2626;font-weight:700">(+${Math.round(x.gap)}%p 갭)</span> → 편성 보강 검토</div>`).join('')
+    : '<div style="font-size:11px;color:#9ca3af">현재 경쟁사 대비 큰 편성 갭 없음 (8%p 미만)</div>';
+
+  /* A-2. 경쟁사 2사 동시 노출인데 Hmall 미노출 브랜드 (최근 3수집일) */
+  const r3=all.slice(-3);
+  const b3={};
+  ALL_ROWS.filter(r=>r3.includes(r.date)).forEach(r=>{
+    _brandsInRow(r).forEach(b=>{(b3[b]=b3[b]||new Set()).add(r.site);});
+  });
+  const missing=Object.entries(b3)
+    .filter(([b,s])=>s.has('GS샵')&&s.has('CJ온스타일')&&!s.has('Hmall'))
+    .map(([b])=>b).slice(0,5);
+  const missHtml=missing.length
+    ? `<div style="font-size:11.5px;color:#374151">GS·CJ 동시 노출 중, Hmall 미노출: `+
+      missing.map(b=>`<span class="brand-hl">${b}</span>`).join(' ')+` → 소싱/행사 검토</div>`
+    : '<div style="font-size:11px;color:#9ca3af">경쟁 2사 동시 노출 브랜드 중 Hmall 미노출 없음</div>';
+
+  /* D. 브랜드 모멘텀: 최근 7일 vs 이전 7일 노출 횟수 가속 */
+  function brandCnt(dates) {
+    const cnt={};
+    ALL_ROWS.filter(r=>dates.includes(r.date)).forEach(r=>{
+      _brandsInRow(r).forEach(b=>{
+        if(!cnt[b]) cnt[b]={n:0,sites:new Set()};
+        cnt[b].n++; cnt[b].sites.add(r.site);
+      });
+    });
+    return cnt;
+  }
+  const cur=brandCnt(recent), before=brandCnt(prev);
+  const rising=Object.entries(cur)
+    .map(([b,d])=>({b, now:d.n, was:(before[b]?.n)||0, sites:[...d.sites], diff:d.n-((before[b]?.n)||0)}))
+    .filter(x=>x.diff>=2 && x.now>=3)
+    .sort((a,b)=>b.diff-a.diff).slice(0,6);
+  const riseHtml=rising.length
+    ? rising.map(x=>`<div style="margin-bottom:4px;font-size:11.5px;color:#374151">
+        <span class="brand-hl">${x.b}</span>
+        <span style="color:#16a34a;font-weight:700">▲ ${x.was}회 → ${x.now}회</span>
+        <span style="font-size:10px;color:#9ca3af">(${x.sites.join('+')})</span>
+        ${x.was===0?'<span style="font-size:10px;color:#dc2626;font-weight:700"> 신규 진입</span>':''}</div>`).join('')
+    : '<div style="font-size:11px;color:#9ca3af">뚜렷한 상승 브랜드 없음</div>';
+
+  el.innerHTML=
+    `<div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:6px">📌 편성 갭 — 경쟁사는 미는데 Hmall이 약한 카테고리</div>`+gapHtml+
+    `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">🔍 미노출 브랜드</div>`+missHtml+
+    `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">🚀 브랜드 모멘텀 — 최근 7수집일 vs 이전 7수집일</div>`+riseHtml+
+    `<div style="margin-top:10px;font-size:10px;color:#c4c9d0">※ 자동 산출 참고 지표입니다. 광고 배너 포함 · 배너 문구 기준이라 실제 편성과 다를 수 있음</div>`;
+}
+
 buildSummary();
+buildRecommend();
 buildTrendSiteTabs();
 buildTrend();
 buildCatTrend();
