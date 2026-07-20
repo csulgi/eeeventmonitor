@@ -131,7 +131,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">📺 홈쇼핑 3사 대표 행사 모니터링</div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 행사 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-16 17:23</div>
+  <div class="hd-ts">최종 업데이트 2026-07-20 11:22</div>
 </div>
 
 <div class="wrap">
@@ -912,7 +912,110 @@ function buildRecommend() {
     `<div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:6px">📌 편성 갭 — 경쟁사는 미는데 Hmall이 약한 카테고리</div>`+gapHtml+
     `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">🔍 미노출 브랜드</div>`+missHtml+
     `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">🚀 브랜드 모멘텀 — 최근 7수집일 vs 이전 7수집일</div>`+riseHtml+
+    `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">🌤 날씨 연동 — 서울 7일 예보 기반 (실시간)</div>
+     <div id="weatherReco"><span style="font-size:11px;color:#9ca3af">예보 불러오는 중...</span></div>`+
+    `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">📆 시즌 캘린더 — 다가오는 이벤트</div>
+     <div id="calReco"></div>`+
     `<div style="margin-top:10px;font-size:10px;color:#c4c9d0">※ 자동 산출 참고 지표입니다. 광고 배너 포함 · 배너 문구 기준이라 실제 편성과 다를 수 있음</div>`;
+  buildCalendarReco();
+  buildWeatherReco();
+}
+
+/* ── 🌤 날씨 연동 추천 (Open-Meteo, 키 불필요, 조회자 브라우저에서 실시간) ── */
+async function buildWeatherReco() {
+  const box=document.getElementById('weatherReco');
+  if(!box) return;
+  try {
+    const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98'
+      +'&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum'
+      +'&timezone=Asia%2FSeoul&forecast_days=7');
+    const j=await r.json();
+    const d=j.daily;
+    const days=d.time.map((t,i)=>({date:t.slice(5), tmax:d.temperature_2m_max[i],
+      tmin:d.temperature_2m_min[i], pprob:d.precipitation_probability_max[i], psum:d.precipitation_sum[i]}));
+    // 신호 감지
+    const hot   = days.filter(x=>x.tmax>=33);
+    const warm  = days.filter(x=>x.tmax>=30);
+    const rain  = days.filter(x=>x.pprob>=60||x.psum>=10);
+    const cold  = days.filter(x=>x.tmin<=0);
+    const chill = days.filter(x=>x.tmin<=8);
+    const drop  = days.length>1 && (days[0].tmax - Math.min(...days.map(x=>x.tmax)) >= 7);
+    const alerts=[];
+    if(hot.length>=2)  alerts.push({t:`🔥 폭염 (33℃↑ ${hot.length}일: ${hot.slice(0,3).map(x=>x.date).join(', ')}${hot.length>3?'…':''})`, cats:['리빙','패션'], sug:'냉감침구·에어컨/서큘레이터·쿨의류·선케어'});
+    else if(warm.length>=3) alerts.push({t:`☀️ 무더위 지속 (30℃↑ ${warm.length}일)`, cats:['리빙','뷰티'], sug:'냉방가전·쿨매트·자외선차단'});
+    if(rain.length>=2) alerts.push({t:`🌧 비 소식 (${rain.slice(0,3).map(x=>x.date).join(', ')}${rain.length>3?'…':''})`, cats:['리빙'], sug:'제습기·제습제·우산/레인부츠·실내용품·곰팡이케어'});
+    if(cold.length>=1) alerts.push({t:`🥶 한파 (영하 ${cold.length}일)`, cats:['패션','리빙'], sug:'패딩·온열가전·난방텍스'});
+    else if(chill.length>=2) alerts.push({t:`🍂 쌀쌀 (아침 8℃↓ ${chill.length}일)`, cats:['패션'], sug:'아우터·니트·환절기 이너'});
+    if(drop) alerts.push({t:'📉 기온 급락 예보 (7℃↑ 하락)', cats:['패션'], sug:'환절기 의류·면역 건강식품'});
+    // 현재 3사 대응 현황 (최신 수집일 메인배너 기준)
+    const latest=DATES[0];
+    const todayRows=ALL_ROWS.filter(r=>r.date===latest&&r.type==='main');
+    function respond(cats) {
+      return SITES.map(s=>{
+        const n=todayRows.filter(r=>r.site===s&&cats.includes(shortCat(r.category))).length;
+        return `${s.replace('온스타일','')} ${n}건`;
+      }).join(' · ');
+    }
+    const head=`<div style="font-size:10.5px;color:#6b7280;margin-bottom:5px">
+      ${days.slice(0,5).map(x=>`${x.date} <b>${Math.round(x.tmax)}°</b>/${Math.round(x.tmin)}°${x.pprob>=60?'☔':''}`).join(' &nbsp; ')}</div>`;
+    box.innerHTML=head+(alerts.length
+      ? alerts.map(a=>`<div style="margin-bottom:5px;font-size:11.5px;color:#374151">
+          <b>${a.t}</b> → ${a.sug}
+          <span style="font-size:10px;color:#9ca3af">| 오늘 관련(${a.cats.join('/')}) 배너: ${respond(a.cats)}</span></div>`).join('')
+      : '<div style="font-size:11px;color:#9ca3af">향후 7일 특이 날씨 신호 없음</div>');
+  } catch(e) {
+    box.innerHTML='<span style="font-size:11px;color:#9ca3af">날씨 정보를 불러오지 못했습니다 (네트워크 차단 가능)</span>';
+  }
+}
+
+/* ── 📆 시즌 캘린더 추천 ── */
+const SEASON_EVENTS=[
+  // 고정/시즌 (매년 반복: MM-DD)
+  {name:'여름휴가 성수기', start:'07-20', end:'08-10', cats:'여행·수영복·선케어·캐리어', yearly:true},
+  {name:'말복/삼계탕 시즌', start:'08-05', end:'08-15', cats:'보양식품·삼계탕·홍삼', yearly:true},
+  {name:'가을 신학기', start:'08-20', end:'09-05', cats:'유아동·학용품·노트북', yearly:true},
+  {name:'환절기(가을)', start:'09-01', end:'09-25', cats:'아우터·면역건강식품·가습', yearly:true},
+  {name:'김장 시즌', start:'11-01', end:'11-30', cats:'김치·절임배추·김치냉장고·주방', yearly:true},
+  {name:'겨울 준비', start:'10-15', end:'11-15', cats:'패딩·온열가전·이불', yearly:true},
+  {name:'연말/크리스마스', start:'12-01', end:'12-25', cats:'선물세트·완구·주얼리·와인', yearly:true},
+  {name:'설 선물 시즌', start:'01-10', end:'02-05', cats:'선물세트·한우·건강식품·상품권', yearly:true},
+  {name:'신학기(봄)', start:'02-15', end:'03-05', cats:'유아동·가구·노트북', yearly:true},
+  {name:'봄 환절기', start:'03-01', end:'03-31', cats:'봄의류·황사마스크·공기청정기', yearly:true},
+  {name:'가정의달', start:'04-20', end:'05-15', cats:'선물·건강식품·유아동·여행', yearly:true},
+  {name:'장마 대비', start:'06-10', end:'07-15', cats:'제습기·레인용품·실내용품', yearly:true},
+  // 특정일 (연도 포함: YYYY-MM-DD, D-day 표시)
+  {name:'추석', date:'2026-09-25', lead:25, cats:'선물세트·정육·과일·상품권'},
+  {name:'수능', date:'2026-11-19', lead:20, cats:'수험생 건강식품·초콜릿·핫팩'},
+  {name:'블랙프라이데이', date:'2026-11-27', lead:14, cats:'가전·디지털 특가'},
+  {name:'설날', date:'2027-02-06', lead:25, cats:'선물세트·한우·굴비·상품권'},
+];
+function buildCalendarReco() {
+  const box=document.getElementById('calReco');
+  if(!box) return;
+  const now=new Date(); const y=now.getFullYear();
+  const today=now.toISOString().slice(0,10);
+  function md2date(md,year) { return `${year}-${md}`; }
+  const items=[];
+  SEASON_EVENTS.forEach(ev=>{
+    if(ev.yearly) {
+      for(const yy of [y, y+1]) {
+        const s=md2date(ev.start,yy), e=md2date(ev.end,yy);
+        const dS=(new Date(s)-now)/864e5;
+        if(today>=s && today<=e) items.push({...ev, status:'진행 중', order:-1});
+        else if(dS>0 && dS<=30) items.push({...ev, status:`D-${Math.ceil(dS)} (${s.slice(5)}~)`, order:dS});
+      }
+    } else {
+      const dS=(new Date(ev.date)-now)/864e5;
+      if(dS>0 && dS<=(ev.lead||21)) items.push({...ev, status:`D-${Math.ceil(dS)} (${ev.date.slice(5)})`, order:dS});
+    }
+  });
+  const uniq=[]; const seenN=new Set();
+  items.sort((a,b)=>a.order-b.order).forEach(x=>{if(!seenN.has(x.name)){seenN.add(x.name);uniq.push(x);}});
+  box.innerHTML=uniq.length
+    ? uniq.slice(0,5).map(x=>`<div style="margin-bottom:4px;font-size:11.5px;color:#374151">
+        <b style="color:${x.status==='진행 중'?'#dc2626':'#1d4ed8'}">[${x.status}]</b>
+        <b>${x.name}</b> → ${x.cats}</div>`).join('')
+    : '<div style="font-size:11px;color:#9ca3af">30일 내 주요 시즌 이벤트 없음</div>';
 }
 
 buildSummary();
