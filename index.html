@@ -145,7 +145,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">📺 홈쇼핑 3사 대표 행사 모니터링</div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 행사 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-24 14:28</div>
+  <div class="hd-ts">최종 업데이트 2026-07-24 14:32</div>
 </div>
 
 <div class="wrap">
@@ -268,6 +268,8 @@ const BRAND_STOP = new Set((
   '필수 냉감 패키지 루틴 필수템 데일리 홈트 클렌징 케어 세트구성 단독 사은품 리필 대용량 '+
   '반품 설치 제철 운동화 여름피부 마스터케어 무료반품 무료설치 먹거리 코디 정석 특별전 초특가전 브랜드위크 '+
   '결제창 깜짝쿠폰 이월특가 장기무이자 역시즌세일 이월 무이자 즉시할인 최대혜택 '+
+  '반팔 그레인 부드러운 저자극 무농약 스포츠 제주 바로도착 긴팔 반바지 긴바지 무첨가 유기농 국내산 수제 '+
+  '천연 프리미엄급 정품 특대 대과 산지직송 당일발송 새벽배송 무료체험 체험 렌탈 구독 정기배송 '+
   '건강 바캉스 최초 역시 생방송 본방사수 시원한 럭키 익일 김치 키친타올 집테리어 북토크 글로우 현대 언더웨어 '+
   '슈퍼위크 이지웨어 필수템 응원 팀 방수 최저가 '+
   '무더위 기미 포기김치 제습제 속옷 황정민쇼 소유진쇼 동가게 매주 목요일 화요일 수요일 월요일 금요일 토요일 일요일 '+
@@ -291,6 +293,7 @@ function _bIsStop(tok) {
   if(BRAND_EN_STOP.has(tok.toLowerCase())) return true;      // 영문 일반어
   if(tok.includes('브랜드')) return true;                     // Top브랜드100 등
   if(/(요|죠|네|다|함|중|용)$/.test(tok) && tok.length>=3) return true;  // 어미/서술형
+  if(/(운|런|른|한|던|는|린|워|해|께|처럼)$/.test(tok) && tok.length>=3) return true;  // 형용사/수식어 어미(부드러운·촉촉한 등)
   if(/(페어|위크|데이|전|展)$/.test(tok)) return true;         // 행사성 접미
   return false;
 }
