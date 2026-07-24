@@ -131,7 +131,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">📺 홈쇼핑 3사 대표 행사 모니터링</div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 행사 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-24 10:39</div>
+  <div class="hd-ts">최종 업데이트 2026-07-24 10:56</div>
 </div>
 
 <div class="wrap">
@@ -914,7 +914,7 @@ function buildRecommend() {
     `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">🚀 브랜드 모멘텀 — 최근 7수집일 vs 이전 7수집일</div>`+riseHtml+
     `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">🌤 날씨 연동 — 서울 7일 예보 기반 (실시간)</div>
      <div id="weatherReco"><span style="font-size:11px;color:#9ca3af">예보 불러오는 중...</span></div>`+
-    `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">📆 시즌 캘린더 — 다가오는 이벤트 (~2개월)</div>
+    `<div style="margin:12px 0 6px;font-size:11px;font-weight:700;color:#374151">📆 시즌 캘린더 — 다가오는 이벤트 (~3개월)</div>
      <div id="calReco"></div>`+
     `<div style="margin-top:10px;font-size:10px;color:#c4c9d0">※ 자동 산출 참고 지표입니다. 광고 배너 포함 · 배너 문구 기준이라 실제 편성과 다를 수 있음</div>`;
   buildCalendarReco();
@@ -992,7 +992,7 @@ const SEASON_EVENTS=[
   {name:'블랙프라이데이', date:'2026-11-27', lead:14, cats:'가전·디지털 특가'},
   {name:'설날', date:'2027-02-06', lead:40, cats:'선물세트(대량구매)·한우·굴비·상품권'},
 ];
-const CAL_WINDOW=62;   // 다가오는 이벤트 표시 범위(일) ≒ 다음다음 달까지
+const CAL_WINDOW=93;   // 다가오는 이벤트 표시 범위(일) ≒ 3개월 뒤까지
 function buildCalendarReco() {
   const box=document.getElementById('calReco');
   if(!box) return;
@@ -1016,10 +1016,10 @@ function buildCalendarReco() {
   const uniq=[]; const seenN=new Set();
   items.sort((a,b)=>a.order-b.order).forEach(x=>{if(!seenN.has(x.name)){seenN.add(x.name);uniq.push(x);}});
   box.innerHTML=uniq.length
-    ? uniq.slice(0,8).map(x=>`<div style="margin-bottom:4px;font-size:11.5px;color:#374151">
+    ? uniq.slice(0,10).map(x=>`<div style="margin-bottom:4px;font-size:11.5px;color:#374151">
         <b style="color:${x.status==='진행 중'?'#dc2626':'#1d4ed8'}">[${x.status}]</b>
         <b>${x.name}</b> → ${x.cats}</div>`).join('')
-    : '<div style="font-size:11px;color:#9ca3af">2개월 내 주요 시즌 이벤트 없음</div>';
+    : '<div style="font-size:11px;color:#9ca3af">3개월 내 주요 시즌 이벤트 없음</div>';
 }
 
 buildSummary();
