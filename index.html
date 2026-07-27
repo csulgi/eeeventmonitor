@@ -145,7 +145,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">📺 홈쇼핑 3사 대표 행사 모니터링</div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 행사 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-27 11:38</div>
+  <div class="hd-ts">최종 업데이트 2026-07-27 13:21</div>
 </div>
 
 <div class="wrap">
@@ -200,6 +200,20 @@ details[open] summary::before{content:'▼'}
 
   <!-- 3컬럼 비교 -->
   <div class="compare-grid" id="compareGrid"></div>
+
+  <!-- 분석 기간 선택 -->
+  <div style="display:flex;align-items:center;gap:8px;margin:4px 2px 12px">
+    <span style="font-size:12px;font-weight:800;color:#374151">📈 분석 기간</span>
+    <select id="statPeriodSel" onchange="onStatPeriod(this.value)"
+      style="padding:5px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;font-weight:700;color:#374151;background:#fff;cursor:pointer">
+      <option value="7">최근 7일</option>
+      <option value="14">최근 14일</option>
+      <option value="30" selected>최근 30일</option>
+      <option value="60">최근 60일</option>
+      <option value="all">전체</option>
+    </select>
+    <span style="font-size:10px;color:#9ca3af">아래 추이·트렌드·배너 인사이트에 적용</span>
+  </div>
 
   <!-- 메인배너 카테고리 구성 추이 -->
   <div class="cat-section" style="margin-bottom:14px">
@@ -730,6 +744,15 @@ const CAT_COLORS = {'패션':'#6366f1','트렌드':'#ec4899','뷰티':'#f59e0b',
 function catColor(c) { return CAT_COLORS[shortCat(c)] || '#cbd5e1'; }
 function allDatesAsc() { return [...new Set(ALL_ROWS.map(r=>r.date))].sort(); }
 
+/* ── 분석 기간 (트렌드·배너 인사이트·카테고리 추이 공통) ── */
+let statPeriod = '30';
+function statDatesAsc() {
+  const all=allDatesAsc();
+  return (statPeriod==='all') ? all : all.slice(-Number(statPeriod));
+}
+function statDateSet() { return new Set(statDatesAsc()); }
+function onStatPeriod(v) { statPeriod=v; buildCatTrend(); buildTrend(); buildBannerInsight(); }
+
 function catLegendHtml() {
   const cats=['패션','트렌드','뷰티','식품','리빙','라이프','혼합','기타'];
   return `<div style="display:flex;flex-wrap:wrap;gap:9px;margin-bottom:8px">`+
@@ -760,7 +783,8 @@ function buildTrendSiteTabs() {
 function onTrendSite(s) { trendSite=s; buildTrendSiteTabs(); buildTrend(); }
 
 function buildTrend() {
-  const rowsScope=ALL_ROWS.filter(r=> trendSite==='전체' || r.site===trendSite);
+  const SD=statDateSet();
+  const rowsScope=ALL_ROWS.filter(r=> SD.has(r.date) && (trendSite==='전체' || r.site===trendSite));
   const dates=[...new Set(rowsScope.map(r=>r.date))].sort();
   const bcount={};
   rowsScope.forEach(r=>{
@@ -790,8 +814,8 @@ var catTrendExpanded=false;
 const CAT_TREND_LIMIT=15;
 function toggleCatTrend() { catTrendExpanded=!catTrendExpanded; buildCatTrend(); }
 function buildCatTrend() {
-  const all=allDatesAsc();                       // 오래된순
-  const recent=all.slice(-CAT_TREND_LIMIT);      // 최근 15일
+  const all=statDatesAsc();                       // 선택 기간(오래된순)
+  const recent=all.slice(-CAT_TREND_LIMIT);      // 그 중 최근 15일
   const dates=catTrendExpanded?all:recent;
   const hidden=all.length-recent.length;
   document.getElementById('catTrendLegend').innerHTML=catLegendHtml();
@@ -867,9 +891,10 @@ function buildCompare() {
 function _daysBetween(a, b) { return Math.round((new Date(b)-new Date(a))/864e5)+1; }
 function buildBannerInsight() {
   const el=document.getElementById('bannerInsight');
+  const SD=statDateSet();
   // site -> 광고여부 -> normTitle -> {dates:Set, sample:행사명}
   const g={};
-  ALL_ROWS.filter(r=>r.type==='main').forEach(r=>{
+  ALL_ROWS.filter(r=>r.type==='main' && SD.has(r.date)).forEach(r=>{
     const key=_norm(r.event); if(!key) return;
     const ad=r.is_ad?'광고':'광고 외';
     g[r.site]=g[r.site]||{}; g[r.site][ad]=g[r.site][ad]||{};
@@ -895,23 +920,28 @@ function buildBannerInsight() {
     const longest=spans.slice().sort((a,b)=>b.span-a.span)[0];
     return {count:evs.length, days:siteDates.length, avgNew, avgSpan, oneDayPct:Math.round(oneDay/evs.length*100), longest};
   }
-  el.innerHTML=SITES.map(site=>{
+  const cards=SITES.map(site=>{
     const fg=SITE_CFG[site].fg;
     const rowFor=(ad)=>{
-      const s=statBlock(site,ad); if(!s) return `<div style="font-size:11px;color:#9ca3af">${ad}: 데이터 없음</div>`;
-      return `<div style="font-size:11.5px;color:#374151;margin-bottom:3px">
-        <b>${ad}</b> · 고유행사 ${s.count}건 (수집 ${s.days}일)<br>
-        <span style="color:#6b7280">· 일평균 신규 <b>${s.avgNew.toFixed(1)}건</b>
-        · 평균 노출 <b>${s.avgSpan.toFixed(1)}일</b>
-        <span style="font-size:10px;color:#9ca3af">(1일노출 ${s.oneDayPct}%)</span></span><br>
-        <span style="font-size:10px;color:#9ca3af">· 최장 노출: ${highlightBrands(s.longest.sample.slice(0,30))} ${s.longest.span}일</span></div>`;
+      const s=statBlock(site,ad);
+      if(!s) return `<div style="font-size:10.5px;color:#9ca3af;margin-bottom:6px">${ad}: 데이터 없음</div>`;
+      return `<div style="margin-bottom:8px">
+        <div style="font-size:11px;font-weight:700;color:#374151">${ad} <span style="font-weight:400;color:#9ca3af">고유 ${s.count}건</span></div>
+        <div style="font-size:11px;color:#6b7280;line-height:1.7">
+          일평균 신규 <b style="color:#374151">${s.avgNew.toFixed(1)}건</b><br>
+          평균 노출 <b style="color:#374151">${s.avgSpan.toFixed(1)}일</b> <span style="font-size:9px;color:#b0b6be">(1일 ${s.oneDayPct}%)</span><br>
+          최장 <b style="color:#374151">${s.longest.span}일</b> <span style="font-size:9px;color:#b0b6be">${highlightBrands(s.longest.sample.slice(0,16))}</span>
+        </div></div>`;
     };
-    return `<div class="reco-card" style="margin-bottom:10px">
+    return `<div class="reco-card">
       <div class="reco-hd" style="color:${fg}">${site}</div>
-      ${rowFor('광고 외')}<div style="height:6px"></div>${rowFor('광고')}
+      ${rowFor('광고 외')}
+      <div style="border-top:1px dashed #e5e7eb;padding-top:6px">${rowFor('광고')}</div>
     </div>`;
-  }).join('')+
-  `<div style="margin-top:6px;font-size:10px;color:#c4c9d0">※ 같은 행사명 기준 집계. 캐러셀로 문구가 매일 바뀌는 행사는 '1일 노출'로 잡혀 평균이 실제보다 짧을 수 있음(1일노출 비율 참고). 노출기간=최초~최종 노출일 간격.</div>`;
+  }).join('');
+  el.innerHTML=
+    `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">${cards}</div>`+
+    `<div style="margin-top:8px;font-size:10px;color:#c4c9d0">※ 같은 행사명 기준 집계. 캐러셀로 문구가 매일 바뀌는 행사는 '1일 노출'로 잡혀 평균이 실제보다 짧을 수 있음(1일노출 비율 참고). 노출기간=최초~최종 노출일 간격.</div>`;
 }
 
 /* ── 💡 오늘의 추천 (A: 편성 갭 + D: 브랜드 모멘텀) ── */
