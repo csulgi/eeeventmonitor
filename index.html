@@ -145,7 +145,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">📺 홈쇼핑 3사 대표 행사 모니터링</div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 행사 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-27 11:00</div>
+  <div class="hd-ts">최종 업데이트 2026-07-27 11:33</div>
 </div>
 
 <div class="wrap">
@@ -195,6 +195,14 @@ details[open] summary::before{content:'▼'}
           style="padding:5px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;font-weight:700;color:#374151;background:#fff;cursor:pointer"></select>
       </div>
       <div id="cmpBody" style="margin-top:12px"></div>
+    </details>
+  </div>
+
+  <!-- 배너 노출 인사이트 -->
+  <div class="summary-box">
+    <details>
+      <summary>📊 배너 노출 인사이트 (사별 · 광고 구분)</summary>
+      <div id="bannerInsight" style="margin-top:12px"></div>
     </details>
   </div>
 
@@ -855,6 +863,57 @@ function buildCompare() {
     `<div style="font-size:11px;font-weight:700;color:#374151;margin:16px 0 6px">🎯 사이트별 차별 포인트</div>`+diff;
 }
 
+/* ── 📊 배너 노출 인사이트 (사별 · 광고 구분) ── */
+function _daysBetween(a, b) { return Math.round((new Date(b)-new Date(a))/864e5)+1; }
+function buildBannerInsight() {
+  const el=document.getElementById('bannerInsight');
+  // site -> 광고여부 -> normTitle -> {dates:Set, sample:행사명}
+  const g={};
+  ALL_ROWS.filter(r=>r.type==='main').forEach(r=>{
+    const key=_norm(r.event); if(!key) return;
+    const ad=r.is_ad?'광고':'광고 외';
+    g[r.site]=g[r.site]||{}; g[r.site][ad]=g[r.site][ad]||{};
+    if(!g[r.site][ad][key]) g[r.site][ad][key]={dates:new Set(), sample:r.event};
+    g[r.site][ad][key].dates.add(r.date);
+  });
+  function statBlock(site, ad) {
+    const m=(g[site]||{})[ad]; if(!m) return null;
+    const evs=Object.values(m);
+    // 사이트 수집일(해당 광고구분 기준)
+    const siteDates=[...new Set(evs.flatMap(e=>[...e.dates]))].sort();
+    if(!siteDates.length) return null;
+    const firstDay=siteDates[0];
+    // 신규: 각 행사 최초등장일
+    const newByDate={};
+    evs.forEach(e=>{ const fs=[...e.dates].sort()[0]; newByDate[fs]=(newByDate[fs]||0)+1; });
+    const applic=siteDates.filter(d=>d>firstDay);
+    const avgNew=applic.length? applic.reduce((s,d)=>s+(newByDate[d]||0),0)/applic.length : (newByDate[firstDay]||0);
+    // 노출기간: 최초~최종 캘린더 일수
+    const spans=evs.map(e=>{const ds=[...e.dates].sort(); return {span:_daysBetween(ds[0],ds[ds.length-1]), seen:e.dates.size, sample:e.sample};});
+    const avgSpan=spans.reduce((s,x)=>s+x.span,0)/spans.length;
+    const oneDay=spans.filter(x=>x.span===1).length;
+    const longest=spans.slice().sort((a,b)=>b.span-a.span)[0];
+    return {count:evs.length, days:siteDates.length, avgNew, avgSpan, oneDayPct:Math.round(oneDay/evs.length*100), longest};
+  }
+  el.innerHTML=SITES.map(site=>{
+    const fg=SITE_CFG[site].fg;
+    const rowFor=(ad)=>{
+      const s=statBlock(site,ad); if(!s) return `<div style="font-size:11px;color:#9ca3af">${ad}: 데이터 없음</div>`;
+      return `<div style="font-size:11.5px;color:#374151;margin-bottom:3px">
+        <b>${ad}</b> · 고유행사 ${s.count}건 (수집 ${s.days}일)<br>
+        <span style="color:#6b7280">· 일평균 신규 <b>${s.avgNew.toFixed(1)}건</b>
+        · 평균 노출 <b>${s.avgSpan.toFixed(1)}일</b>
+        <span style="font-size:10px;color:#9ca3af">(1일노출 ${s.oneDayPct}%)</span></span><br>
+        <span style="font-size:10px;color:#9ca3af">· 최장 노출: ${highlightBrands(s.longest.sample.slice(0,30))} ${s.longest.span}일</span></div>`;
+    };
+    return `<div class="reco-card" style="margin-bottom:10px">
+      <div class="reco-hd" style="color:${fg}">${site}</div>
+      ${rowFor('광고 외')}<div style="height:6px"></div>${rowFor('광고')}
+    </div>`;
+  }).join('')+
+  `<div style="margin-top:6px;font-size:10px;color:#c4c9d0">※ 같은 행사명 기준 집계. 캐러셀로 문구가 매일 바뀌는 행사는 '1일 노출'로 잡혀 평균이 실제보다 짧을 수 있음(1일노출 비율 참고). 노출기간=최초~최종 노출일 간격.</div>`;
+}
+
 /* ── 💡 오늘의 추천 (A: 편성 갭 + D: 브랜드 모멘텀) ── */
 function _brandsInRow(r) { return extractBrands(r.event); }
 function buildRecommend() {
@@ -1059,6 +1118,7 @@ buildTrendSiteTabs();
 buildTrend();
 buildCatTrend();
 buildCompare();
+buildBannerInsight();
 render();
 </script>
 </body>
