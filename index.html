@@ -151,7 +151,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">📺 홈쇼핑 3사 모바일 편성</div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-29 16:12</div>
+  <div class="hd-ts">최종 업데이트 2026-07-29 16:36</div>
 </div>
 <div class="maintab-bar">
   <div class="maintab active" id="mtMonitor" onclick="switchMainTab('monitor')">📋 행사 모니터링</div>
@@ -281,14 +281,11 @@ details[open] summary::before{content:'▼'}
     </details>
   </div>
 
-  <!-- 검색어 트렌드 (준비 중) -->
+  <!-- 검색어 트렌드 (네이버 데이터랩) -->
   <div class="summary-box">
     <details>
-      <summary>🔎 검색어 트렌드 (네이버 데이터랩 · 연동 예정)</summary>
-      <div style="margin-top:12px;font-size:11.5px;color:#9ca3af;line-height:1.6">
-        네이버 데이터랩 API 키를 등록하면, 웰니스·제습기 등 <b>키워드별 검색량 추이</b>를
-        홈쇼핑 편성·뉴스 테마와 나란히 볼 수 있습니다. (developers.naver.com에서 무료 발급)
-      </div>
+      <summary>🔎 검색어 트렌드 (네이버 데이터랩 · 최근 90일)</summary>
+      <div id="naverBody" style="margin-top:12px"></div>
     </details>
   </div>
 
@@ -305,6 +302,7 @@ const DATES       = ["2026-07-28", "2026-07-26", "2026-07-25", "2026-07-24", "20
 const SITE_CFG    = {"GS샵": {"fg": "#c8001a", "bg": "#fff0f0", "bd": "#f5c2c2", "hd": "#c8001a"}, "CJ온스타일": {"fg": "#003087", "bg": "#edf0f9", "bd": "#b8c5e8", "hd": "#003087"}, "Hmall": {"fg": "#00733a", "bg": "#eaf7ef", "bd": "#9fd9bb", "hd": "#00733a"}};
 const BRANDS      = ["조르지오아르마니", "오하루 자연가득", "톰 더 글로우", "아서앤그레이스", "TELASSE", "아모레퍼시픽", "LG생활건강", "시카PDRN", "CHANEL", "MORGAN", "베이직하우스", "프리마클라쎄", "서포트라이트", "제이에스티나", "CJ제일제당", "하이원리조트", "이니스프리", "코스알엑스", "서울리스타", "AGE20", "SK-II", "에스티로더", "바이아우어", "노스페이스", "에잇세컨즈", "테일러센츠", "라인쥬얼리", "스노우피크", "플리츠마마", "써니라이프", "디스커버리", "대유위니아", "레이디가구", "에버콜라겐", "신영와코루", "매스티나", "PDRN", "SKII", "시세이도", "클라랑스", "입생로랑", "크리니크", "지오다노", "라코스테", "SJ와니", "스케쳐스", "라삐아프", "드베로타", "삼성전자", "LG전자", "귀뚜라미", "삼성전자", "삼성물산", "리드볼트", "일양약품", "대웅제약", "유한양행", "한미약품", "에스까다", "세포랩", "설화수", "아모레", "닥터지", "비욘드", "차앤박", "덴프스", "불가리", "비비안", "알레보", "모르간", "헤지스", "베라왕", "골든듀", "더엣지", "락포트", "오스템", "다이슨", "위닉스", "린나이", "파세코", "브라운", "필립스", "드롱기", "스텔라", "종근당", "풀무원", "오뚜기", "올바른", "하이뮨", "히트락", "이케아", "자코모", "오하루", "코웨이", "루메나", "시몬스", "세라젬", "헤라", "샤넬", "랑콤", "나스", "겐조", "빈폴", "나론", "쏘울", "입큰", "뷰센", "신일", "LG", "애플", "소니", "동원", "쿤달", "포미", "세라"];
 const NEWS_DATA   = {"items": [], "themes": []};
+const NAVER_DATA  = {"collected_at": "2026-07-29 16:36:06", "keywords": [{"keyword": "제습기", "series": [{"date": "2026-04-27", "ratio": 15.5}, {"date": "2026-05-04", "ratio": 14.6}, {"date": "2026-05-11", "ratio": 21.8}, {"date": "2026-05-18", "ratio": 27.9}, {"date": "2026-05-25", "ratio": 63.2}, {"date": "2026-06-01", "ratio": 29.3}, {"date": "2026-06-08", "ratio": 21.5}, {"date": "2026-06-15", "ratio": 40.2}, {"date": "2026-06-22", "ratio": 27.3}, {"date": "2026-06-29", "ratio": 43.1}, {"date": "2026-07-06", "ratio": 100}, {"date": "2026-07-13", "ratio": 53.0}, {"date": "2026-07-20", "ratio": 58.3}, {"date": "2026-07-27", "ratio": 10.2}], "latest": 10.2, "diff": 22.4}, {"keyword": "다이어트", "series": [{"date": "2026-04-27", "ratio": 5.1}, {"date": "2026-05-04", "ratio": 5.5}, {"date": "2026-05-11", "ratio": 5.8}, {"date": "2026-05-18", "ratio": 5.5}, {"date": "2026-05-25", "ratio": 5.9}, {"date": "2026-06-01", "ratio": 5.7}, {"date": "2026-06-08", "ratio": 6.1}, {"date": "2026-06-15", "ratio": 5.6}, {"date": "2026-06-22", "ratio": 5.2}, {"date": "2026-06-29", "ratio": 5.2}, {"date": "2026-07-06", "ratio": 5.4}, {"date": "2026-07-13", "ratio": 5.0}, {"date": "2026-07-20", "ratio": 5.5}, {"date": "2026-07-27", "ratio": 1.7}], "latest": 1.7, "diff": -1.1}, {"keyword": "콜라겐", "series": [{"date": "2026-04-27", "ratio": 8.6}, {"date": "2026-05-04", "ratio": 8.0}, {"date": "2026-05-11", "ratio": 7.1}, {"date": "2026-05-18", "ratio": 7.2}, {"date": "2026-05-25", "ratio": 7.1}, {"date": "2026-06-01", "ratio": 7.2}, {"date": "2026-06-08", "ratio": 7.5}, {"date": "2026-06-15", "ratio": 6.8}, {"date": "2026-06-22", "ratio": 7.5}, {"date": "2026-06-29", "ratio": 7.6}, {"date": "2026-07-06", "ratio": 6.6}, {"date": "2026-07-13", "ratio": 5.9}, {"date": "2026-07-20", "ratio": 6.2}, {"date": "2026-07-27", "ratio": 2.3}], "latest": 2.3, "diff": -2.1}, {"keyword": "여름원피스", "series": [{"date": "2026-04-27", "ratio": 3.6}, {"date": "2026-05-04", "ratio": 4.2}, {"date": "2026-05-11", "ratio": 6.6}, {"date": "2026-05-18", "ratio": 7.1}, {"date": "2026-05-25", "ratio": 7.9}, {"date": "2026-06-01", "ratio": 8.5}, {"date": "2026-06-08", "ratio": 8.1}, {"date": "2026-06-15", "ratio": 9.2}, {"date": "2026-06-22", "ratio": 8.6}, {"date": "2026-06-29", "ratio": 8.8}, {"date": "2026-07-06", "ratio": 9.6}, {"date": "2026-07-13", "ratio": 8.9}, {"date": "2026-07-20", "ratio": 7.4}, {"date": "2026-07-27", "ratio": 2.3}], "latest": 2.3, "diff": -1.6}, {"keyword": "캠핑", "series": [{"date": "2026-04-27", "ratio": 6.8}, {"date": "2026-05-04", "ratio": 4.4}, {"date": "2026-05-11", "ratio": 4.3}, {"date": "2026-05-18", "ratio": 5.4}, {"date": "2026-05-25", "ratio": 4.2}, {"date": "2026-06-01", "ratio": 4.2}, {"date": "2026-06-08", "ratio": 4.1}, {"date": "2026-06-15", "ratio": 3.1}, {"date": "2026-06-22", "ratio": 3.0}, {"date": "2026-06-29", "ratio": 3.0}, {"date": "2026-07-06", "ratio": 2.9}, {"date": "2026-07-13", "ratio": 3.2}, {"date": "2026-07-20", "ratio": 3.0}, {"date": "2026-07-27", "ratio": 0.9}], "latest": 0.9, "diff": -0.8}]};
 const SITES       = ['GS샵','CJ온스타일','Hmall'];
 
 /* ── 브랜드 자동 학습 (행사명 앞/뒤 토큰 중 반복 등장하는 고유명사) ── */
@@ -993,6 +991,40 @@ function buildBannerInsight() {
     `<div style="margin-top:8px;font-size:10px;color:#c4c9d0">※ 같은 행사명 기준 집계. 캐러셀로 문구가 매일 바뀌는 행사는 '1일 노출'로 잡혀 평균이 실제보다 짧을 수 있음(1일노출 비율 참고). 노출기간=최초~최종 노출일 간격.</div>`;
 }
 
+/* ── 🔎 네이버 검색어 트렌드 ── */
+function _spark(series, color) {
+  const vals=series.map(x=>x.ratio); const mx=Math.max(...vals,1), mn=Math.min(...vals,0);
+  const W=120, H=26, n=vals.length;
+  const pts=vals.map((v,i)=>{
+    const x=n>1? i/(n-1)*W : 0;
+    const y=H - ((v-mn)/((mx-mn)||1))*(H-4) - 2;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  return `<svg width="${W}" height="${H}" style="vertical-align:middle">
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.6"/>
+  </svg>`;
+}
+function buildNaver() {
+  const el=document.getElementById('naverBody'); if(!el) return;
+  const ks=(NAVER_DATA.keywords||[]);
+  if(!ks.length){ el.innerHTML='<span style="font-size:11px;color:#9ca3af">아직 수집된 검색어 트렌드가 없습니다 (다음 수집부터 표시)</span>'; return; }
+  const sorted=ks.slice().sort((a,b)=>b.diff-a.diff);
+  el.innerHTML=
+    `<div style="font-size:11px;font-weight:700;color:#374151;margin-bottom:8px">최근 4주 평균 vs 이전 4주 (검색 관심도 변화순)</div>`+
+    sorted.map(k=>{
+      const up=k.diff>0, dn=k.diff<0;
+      const col=up?'#dc2626':(dn?'#2563eb':'#9ca3af');
+      const badge=up?`▲ ${k.diff}`:(dn?`▼ ${-k.diff}`:'–');
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <div style="min-width:78px;font-size:12px;font-weight:700;color:#374151">${k.keyword}</div>
+        <div style="flex:0 0 auto">${_spark(k.series, col)}</div>
+        <div style="font-size:11px;color:#6b7280">지수 <b>${k.latest}</b>
+          <span style="color:${col};font-weight:700">${badge}</span></div>
+      </div>`;
+    }).join('')+
+    `<div style="margin-top:8px;font-size:10px;color:#c4c9d0">※ 네이버 데이터랩 상대지수(주간). 값은 조회 키워드 묶음 내 상대치라 절대 검색량은 아님. 변화(▲/▼)로 최근 관심도 흐름을 봄.</div>`;
+}
+
 /* ── 상단 메인 탭 전환 ── */
 function switchMainTab(tab) {
   document.getElementById('tab-monitor').style.display   = tab==='monitor'   ? '' : 'none';
@@ -1237,6 +1269,7 @@ buildCatTrend();
 buildCompare();
 buildBannerInsight();
 buildNews();
+buildNaver();
 render();
 </script>
 </body>
