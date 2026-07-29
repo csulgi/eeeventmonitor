@@ -157,7 +157,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 3사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-29 16:51</div>
+  <div class="hd-ts">최종 업데이트 2026-07-29 16:56</div>
 </div>
 <div class="maintab-bar">
   <div class="maintab active" id="mtMonitor" onclick="switchMainTab('monitor')">행사 모니터링</div>
@@ -171,7 +171,8 @@ details[open] summary::before{content:'▼'}
   <!-- 조회 일자 (통일된 날짜 선택) -->
   <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
     <span style="font-size:12px;font-weight:800;color:#374151">📅 조회 일자</span>
-    <div class="date-tabs" id="dateTabs" style="margin-bottom:0"></div>
+    <select id="dateSel" onchange="onDateChange(this.value)"
+      style="padding:6px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;font-weight:700;color:#374151;background:#fff;cursor:pointer"></select>
   </div>
 
   <!-- 요약 -->
@@ -518,15 +519,15 @@ function switchSumTab(tab) {
   if (tab==='monthly') buildMonthlySummary();
 }
 
-/* ── 날짜 탭 ── */
+/* ── 조회 일자 드롭다운 ── */
+function onDateChange(d) { selDate=d; render(); }
 function buildDateTabs() {
-  const el=document.getElementById('dateTabs');
+  const el=document.getElementById('dateSel');
+  if(!el) return;
+  if(!DATES.includes(selDate)) selDate=DATES[0]||'';
   el.innerHTML=DATES.map(d=>
-    `<div class="date-tab${d===selDate?' active':''}" data-date="${d}">${d}</div>`
+    `<option value="${d}"${d===selDate?' selected':''}>${d}${d===DATES[0]?' (오늘)':''}</option>`
   ).join('');
-  el.querySelectorAll('.date-tab').forEach(t=>t.addEventListener('click',()=>{
-    selDate=t.dataset.date; render();
-  }));
 }
 
 /* ── 일자별 요약: 통일된 조회 일자(selDate) 기준 ── */
