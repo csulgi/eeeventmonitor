@@ -157,7 +157,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 3사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-29 16:46</div>
+  <div class="hd-ts">최종 업데이트 2026-07-29 16:51</div>
 </div>
 <div class="maintab-bar">
   <div class="maintab active" id="mtMonitor" onclick="switchMainTab('monitor')">행사 모니터링</div>
@@ -168,6 +168,12 @@ details[open] summary::before{content:'▼'}
 
  <div id="tab-monitor">
 
+  <!-- 조회 일자 (통일된 날짜 선택) -->
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+    <span style="font-size:12px;font-weight:800;color:#374151">📅 조회 일자</span>
+    <div class="date-tabs" id="dateTabs" style="margin-bottom:0"></div>
+  </div>
+
   <!-- 요약 -->
   <div class="summary-box">
     <details open>
@@ -177,10 +183,6 @@ details[open] summary::before{content:'▼'}
         <div class="chip" id="tabMonthly" onclick="switchSumTab('monthly')">월별</div>
       </div>
       <div id="sumDaily">
-        <div style="margin-bottom:10px">
-          <select id="sumDateSel" onchange="onSumDateChange(this.value)"
-            style="padding:5px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;font-weight:700;color:#374151;background:#fff;cursor:pointer"></select>
-        </div>
         <div class="sum-grid" id="sumGrid"></div>
       </div>
       <div id="sumMonthly" style="display:none"><div class="sum-grid" id="monthlyGrid"></div></div>
@@ -191,16 +193,9 @@ details[open] summary::before{content:'▼'}
   <div class="summary-box">
     <details>
       <summary>⚔️ 3사 비교</summary>
-      <div style="margin-top:10px">
-        <select id="cmpDateSel" onchange="onCmpDateChange(this.value)"
-          style="padding:5px 10px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;font-weight:700;color:#374151;background:#fff;cursor:pointer"></select>
-      </div>
       <div id="cmpBody" style="margin-top:12px"></div>
     </details>
   </div>
-
-  <!-- 날짜 탭 -->
-  <div class="date-tabs" id="dateTabs"></div>
 
   <!-- 필터 바 -->
   <div class="filter-bar">
@@ -534,11 +529,7 @@ function buildDateTabs() {
   }));
 }
 
-/* ── 일자별 요약: 선택한 1개 날짜만 표시 (기본=최신) ── */
-var sumSelDate = (typeof DATES!=='undefined' && DATES.length) ? DATES[0] : '';
-
-function onSumDateChange(d) { sumSelDate=d; buildSummary(); }
-
+/* ── 일자별 요약: 통일된 조회 일자(selDate) 기준 ── */
 function summaryCardHtml(d) {
   const ds=SUMMARY[d]||{};
   const dayRows=ALL_ROWS.filter(r=>r.date===d);
@@ -566,17 +557,11 @@ function summaryCardHtml(d) {
 }
 
 function buildSummary() {
-  // 날짜 드롭다운 채우기
-  const sel=document.getElementById('sumDateSel');
-  if (sel) {
-    if (!DATES.includes(sumSelDate)) sumSelDate=DATES[0]||'';
-    sel.innerHTML=DATES.map(d=>
-      `<option value="${d}"${d===sumSelDate?' selected':''}>${d}${d===DATES[0]?' (오늘)':''}</option>`
-    ).join('');
-  }
   const el=document.getElementById('sumGrid');
-  // 선택 날짜부터 최근 4일치 표시 (DATES는 최신순)
-  const idx=Math.max(0, DATES.indexOf(sumSelDate));
+  if(!el) return;
+  // 조회 일자(selDate)부터 최근 4일치 표시 (DATES는 최신순)
+  const anchor=DATES.includes(selDate)?selDate:(DATES[0]||'');
+  const idx=Math.max(0, DATES.indexOf(anchor));
   const showDates=DATES.slice(idx, idx+4);
   el.innerHTML = showDates.length
     ? showDates.map(summaryCardHtml).join('')
@@ -765,6 +750,8 @@ function render() {
   wireTypeChips();
   buildDateTabs();
   buildNewCache();
+  buildSummary();   // 조회 일자 연동
+  buildCompare();   // 조회 일자 연동
 
   // 참고사항 텍스트
   const notices = {
@@ -894,17 +881,9 @@ function buildCatTrend() {
   document.getElementById('catTrend').innerHTML=cols+toggle;
 }
 
-/* ── ⚔️ 3사 비교 ── */
-var cmpSelDate = DATES[0]||'';
-function onCmpDateChange(d) { cmpSelDate=d; buildCompare(); }
+/* ── ⚔️ 3사 비교 (통일된 조회 일자 selDate 기준) ── */
 function buildCompare() {
-  const ds=allDatesAsc().slice().reverse();
-  const sel=document.getElementById('cmpDateSel');
-  if(sel){
-    if(!ds.includes(cmpSelDate)) cmpSelDate=ds[0]||'';
-    sel.innerHTML=ds.map(d=>`<option value="${d}"${d===cmpSelDate?' selected':''}>${d}${d===ds[0]?' (오늘)':''}</option>`).join('');
-  }
-  const d=cmpSelDate;
+  const d=DATES.includes(selDate)?selDate:(DATES[0]||'');
   const dayRows=ALL_ROWS.filter(r=>r.date===d);
   // 1) 교차 노출 브랜드 (2사 이상)
   const binfo={};
