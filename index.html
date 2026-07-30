@@ -157,7 +157,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 3사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-07-29 17:01</div>
+  <div class="hd-ts">최종 업데이트 2026-07-30 09:14</div>
 </div>
 <div class="maintab-bar">
   <div class="maintab active" id="mtMonitor" onclick="switchMainTab('monitor')">행사 모니터링</div>
@@ -1152,12 +1152,27 @@ async function buildWeatherReco() {
   if(!box) return;
   try {
     const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.57&longitude=126.98'
-      +'&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum'
+      +'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum'
       +'&timezone=Asia%2FSeoul&forecast_days=7');
     const j=await r.json();
     const d=j.daily;
-    const days=d.time.map((t,i)=>({date:t.slice(5), tmax:d.temperature_2m_max[i],
+    const days=d.time.map((t,i)=>({date:t.slice(5), wcode:d.weather_code[i], tmax:d.temperature_2m_max[i],
       tmin:d.temperature_2m_min[i], pprob:d.precipitation_probability_max[i], psum:d.precipitation_sum[i]}));
+    // WMO 날씨코드 → 아이콘/설명
+    function wx(c){
+      if(c===0) return {i:'☀️',t:'맑음'};
+      if(c<=2) return {i:'🌤',t:'대체로 맑음'};
+      if(c===3) return {i:'☁️',t:'흐림'};
+      if(c<=48) return {i:'🌫',t:'안개'};
+      if(c<=57) return {i:'🌦',t:'이슬비'};
+      if(c<=67) return {i:'🌧',t:'비'};
+      if(c<=77) return {i:'🌨',t:'눈'};
+      if(c<=82) return {i:'🌧',t:'소나기'};
+      if(c<=86) return {i:'🌨',t:'소낙눈'};
+      return {i:'⛈',t:'뇌우'};
+    }
+    const WD=['일','월','화','수','목','금','토'];
+    function dow(mmdd){ const dt=new Date(new Date().getFullYear()+'-'+mmdd); return WD[dt.getDay()]; }
     // 신호 감지
     const hot   = days.filter(x=>x.tmax>=33);
     const warm  = days.filter(x=>x.tmax>=30);
@@ -1184,9 +1199,20 @@ async function buildWeatherReco() {
         return `<span title="${tip}" style="cursor:help;border-bottom:1px dotted #9ca3af">${s.replace('온스타일','')} ${evs.length}건</span>`;
       }).join(' · ');
     }
-    const head=`<div style="font-size:10.5px;color:#6b7280;margin-bottom:5px">
-      ${days.slice(0,5).map(x=>`${x.date} <b>${Math.round(x.tmax)}°</b>/${Math.round(x.tmin)}°${x.pprob>=60?'☔':''}`).join(' &nbsp; ')}</div>`;
-    box.innerHTML=head+(alerts.length
+    // 7일 예보 스트립 (서울 기준)
+    const strip=`<div style="font-size:10px;font-weight:700;color:#374151;margin-bottom:5px">🌦 서울 7일 예보</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px">
+      ${days.map((x,i)=>{
+        const w=wx(x.wcode);
+        return `<div title="${w.t} · 강수 ${x.pprob}%" style="text-align:center;padding:6px 2px;border-radius:8px;
+          background:${i===0?'#eef2ff':'#f9fafb'};border:1px solid ${i===0?'#c7d2fe':'#eef0f3'}">
+          <div style="font-size:9px;color:#9ca3af">${i===0?'오늘':(x.date.slice(3)+'('+dow(x.date)+')')}</div>
+          <div style="font-size:16px;line-height:1.4">${w.i}</div>
+          <div style="font-size:10px"><b style="color:#dc2626">${Math.round(x.tmax)}°</b><span style="color:#9ca3af">/${Math.round(x.tmin)}°</span></div>
+          <div style="font-size:8.5px;color:${x.pprob>=60?'#2563eb':'#c4c9d0'}">💧${x.pprob}%</div>
+        </div>`;
+      }).join('')}</div>`;
+    box.innerHTML=strip+(alerts.length
       ? alerts.map(a=>`<div style="margin-bottom:5px;font-size:11.5px;color:#374151">
           <b>${a.t}</b> → ${a.sug}
           <span style="font-size:10px;color:#9ca3af">| 오늘 관련(${a.cats.join('/')}) 배너: ${respond(a.cats)}</span></div>`).join('')
