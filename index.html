@@ -157,7 +157,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 3사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-08-21 09:41<br>
+  <div class="hd-ts">최종 업데이트 2026-08-21 10:22<br>
     <a href="./briefing.html" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
@@ -386,14 +386,33 @@ function buildAutoBrands() {
 const BRANDS_ALL = [...new Set([...BRANDS, ...buildAutoBrands()])]
   .sort((a,b)=>b.length-a.length);
 
-/* 사이트별 고정탭 (이 외의 탭을 강조) */
+/* 사이트별 고정탭 시드 (항상 고정으로 인정) — 동적 판정과 합집합 */
 const FIXED_TABS = {
   'GS샵':     ['편성표','라이브','TV','오늘의딜','랭킹','혜택','특가'],
   'CJ온스타일':['라이브쇼','TV','편성표','홈','추천','랭킹','VIP','혜택'],
   'Hmall':    ['라이브','라인업','현대홈쇼핑','백화점','아울렛','혜택','편성표','랭킹'],
 };
+/* 동적 고정탭: 최근 관측일의 80% 이상 등장한 탭은 고정으로 자동 인정
+   (For You·스페셜픽처럼 새로 상시화된 탭을 자동 반영) */
+const DYN_FIXED = (function(){
+  const FIXED_RATIO=0.8, LOOK=14, out={};
+  const days=[...new Set(Object.keys(TABS_DATA))].sort().slice(-LOOK);
+  SITES.forEach(site=>{
+    const cnt={}; let n=0;
+    days.forEach(d=>{
+      const arr=(TABS_DATA[d]||{})[site];
+      if(!arr||!arr.length) return; n++;
+      new Set(arr.map(t=>(t.big||'').replace(/\s+/g,''))).forEach(k=>cnt[k]=(cnt[k]||0)+1);
+    });
+    const s=new Set();
+    if(n>=3) Object.entries(cnt).forEach(([k,c])=>{ if(c>=n*FIXED_RATIO) s.add(k); });
+    out[site]=s;
+  });
+  return out;
+})();
 function isFixedTab(site, big) {
-  const norm = (big||'').replace(/\s+/g,'');
+  const norm=(big||'').replace(/\s+/g,'');
+  if((DYN_FIXED[site]||new Set()).has(norm)) return true;
   return (FIXED_TABS[site]||[]).some(f=>{
     const fn=f.replace(/\s+/g,'');
     return norm===fn || norm.includes(fn) || fn.includes(norm);
