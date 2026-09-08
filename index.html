@@ -157,7 +157,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 3사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-09-09 08:00<br>
+  <div class="hd-ts">최종 업데이트 2026-09-09 08:21<br>
     <a href="./briefing.html" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
@@ -291,6 +291,14 @@ details[open] summary::before{content:'▼'}
     <details open>
       <summary>💡 오늘의 추천 (Hmall 관점 · 최근 7일 기준)</summary>
       <div id="recoBody" style="margin-top:12px"></div>
+    </details>
+  </div>
+
+  <!-- 3사 메인탭 운영 비교 -->
+  <div class="summary-box">
+    <details open>
+      <summary>🧭 3사 메인탭 운영 비교 (고정탭 / 프로모션탭 · 전체기간)</summary>
+      <div id="tabInsightBody" style="margin-top:12px"></div>
     </details>
   </div>
 
@@ -1232,6 +1240,68 @@ function _siteCalTable(site, ym) {
     <tbody>${rows.join('')}</tbody></table></div>`;
 }
 
+/* ── 🧭 3사 메인탭 운영 비교 (TABS_DATA 기반, 자동 갱신) ── */
+function buildTabInsight() {
+  const el=document.getElementById('tabInsightBody');
+  if(!el) return;
+  const dates=Object.keys(TABS_DATA).sort();
+  if(!dates.length){ el.innerHTML='<span style="font-size:11px;color:#9ca3af">탭 데이터 없음</span>'; return; }
+  const SITE_LABEL={'Hmall':'현대(Hmall)','GS샵':'GS샵','CJ온스타일':'CJ온스타일'};
+  const stat={};
+  SITES.forEach(site=>{
+    const perDay=[];            // 날짜별 탭 목록
+    dates.forEach(d=>{
+      const arr=(TABS_DATA[d]||{})[site];
+      if(arr&&arr.length) perDay.push({d, tabs:[...new Set(arr.map(t=>(t.big||'').trim()).filter(Boolean))]});
+    });
+    const n=perDay.length||1;
+    const freq={};
+    perDay.forEach(x=>x.tabs.forEach(t=>freq[t]=(freq[t]||0)+1));
+    const fixed=new Set(Object.entries(freq).filter(([,c])=>c>=n*0.8).map(([t])=>t));
+    const promo=Object.entries(freq).filter(([t])=>!fixed.has(t));
+    const avgTabs=perDay.reduce((s,x)=>s+x.tabs.length,0)/n;
+    const avgPromo=perDay.reduce((s,x)=>s+x.tabs.filter(t=>!fixed.has(t)).length,0)/n;
+    const life=promo.length? promo.reduce((s,[,c])=>s+c,0)/promo.length : 0;
+    stat[site]={n, avgTabs, avgPromo, fixed:[...fixed].sort(), promoKinds:promo.length,
+      life, topPromo:promo.filter(([,c])=>c<n*0.8).sort((a,b)=>b[1]-a[1]).slice(0,8)};
+  });
+  const num=v=>v.toFixed(1);
+  const row=(lbl,f)=>`<tr><td style="padding:5px 8px;font-weight:700;color:#374151;border-bottom:1px solid #f1f3f5">${lbl}</td>`+
+    SITES.map(s=>`<td style="padding:5px 8px;text-align:center;border-bottom:1px solid #f1f3f5">${f(stat[s],s)}</td>`).join('')+'</tr>';
+  let html=`<div style="overflow-x:auto"><table style="border-collapse:collapse;width:100%;min-width:460px;font-size:11.5px">
+    <thead><tr><th style="padding:6px 8px;text-align:left;color:#9ca3af"></th>`+
+    SITES.map(s=>`<th style="padding:6px 8px;color:${SITE_CFG[s].fg};font-weight:800">${SITE_LABEL[s]}</th>`).join('')+`</tr></thead><tbody>`+
+    row('하루 평균 탭수', st=>num(st.avgTabs)+'개')+
+    row('고정탭 수', st=>st.fixed.length+'개')+
+    row('프로모션탭(하루 평균)', st=>num(st.avgPromo)+'개')+
+    row('프로모션탭 종류(누적)', st=>st.promoKinds+'종')+
+    row('프로모션탭 평균수명', st=>num(st.life)+'일')+
+    `</tbody></table></div>`;
+  // 핵심 해석
+  const H=stat['Hmall'], C=stat['CJ온스타일'], G=stat['GS샵'];
+  html+=`<div style="margin-top:12px;font-size:11.5px;line-height:1.7;color:#374151">
+    <b style="color:#111">📌 읽는 법</b><br>
+    · <b>CJ</b>는 프로모션탭을 가장 많이(하루 ${num(C.avgPromo)}개)·오래(평균 ${num(C.life)}일) 운영 — 큐레이션/브랜드관 장기전<br>
+    · <b>GS</b>는 고정탭(${G.fixed.length}개) 위주, 프로모션은 최소(하루 ${num(G.avgPromo)}개)<br>
+    · <b>현대(Hmall)</b>는 프로모션탭 평균수명 ${num(H.life)}일로 <b>빠르게 교체</b> — 실험은 많지만 지속성이 낮음</div>`;
+  // 상설 큐레이션 탭 공백 지표
+  const CURATION=['For You','스페셜픽','월간홈픽','취향발견','이달의뷰티','추천'];
+  const hmallCur=[...new Set(Object.keys(stat['Hmall'].fixed))]; // fixed already
+  const hmallHasCuration=stat['Hmall'].fixed.some(t=>CURATION.some(k=>t.includes(k)))
+    || stat['Hmall'].topPromo.some(([t])=>CURATION.some(k=>t.includes(k)));
+  html+=`<div style="margin-top:10px;padding:10px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:11.5px;line-height:1.6;color:#9a3412">
+    <b>💡 Hmall 시사점</b> — 상설 <b>큐레이션·개인화 탭</b>(For You·스페셜픽·월간홈픽 類)이 ${hmallHasCuration?'일부 있음':'<b>사실상 부재</b>'}. 반응 좋은 프로모션탭을 <b>2~3주 지속 운영</b>해 큐레이션 상설관으로 키우면 CJ 대비 공백을 메울 수 있음.</div>`;
+  // 사별 대표 프로모션탭
+  html+=`<div style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">`;
+  SITES.forEach(s=>{
+    const items=stat[s].topPromo.map(([t,c])=>`<div style="font-size:10.5px;color:#4b5563;margin-bottom:2px">${t} <span style="color:#9ca3af">${c}일</span></div>`).join('')||'<span style="font-size:10px;color:#9ca3af">—</span>';
+    html+=`<div style="border:1px solid #e5e7eb;border-radius:8px;padding:9px 11px">
+      <div style="font-size:11px;font-weight:800;color:${SITE_CFG[s].fg};margin-bottom:5px">${SITE_LABEL[s]} 프로모션탭 TOP</div>${items}</div>`;
+  });
+  html+=`</div>`;
+  el.innerHTML=html;
+}
+
 /* ── 📰 커머스 트렌드 (뉴스 헤드라인 + 테마) ── */
 function buildNews() {
   const el=document.getElementById('newsBody');
@@ -1493,6 +1563,7 @@ buildTrend();
 buildCatTrend();
 buildCompare();
 buildBannerInsight();
+buildTabInsight();
 buildNews();
 buildNaver();
 buildHealthBanner();
