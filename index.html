@@ -157,7 +157,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 3사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-09-09 13:17<br>
+  <div class="hd-ts">최종 업데이트 2026-09-09 13:25<br>
     <a href="./briefing.html" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
@@ -1261,7 +1261,7 @@ function buildTabInsight() {
     const fixed=new Set(Object.entries(freq).filter(([,c])=>c>=n*0.8).map(([t])=>t));
     const avgTabs=perDay.reduce((s,x)=>s+x.tabs.length,0)/n;
     const avgNonFixed=perDay.reduce((s,x)=>s+x.tabs.filter(t=>!fixed.has(t)).length,0)/n;
-    // 개인화·큐레이션 탭 감지 (고정·비고정 무관, 누적 등장 탭 중)
+    // 개인화·큐레이션 탭 감지 (고정·비고정 무관 — 고정탭이어도 큐레이션으로 함께 표시)
     // 키워드형 + 카테고리 큐레이션 명시 탭(GS 뷰티#·패션Now)
     const CUR=['For You','포유','스페셜픽','월간홈픽','취향발견','이달의','MD추천','큐레이션','뷰티#','패션Now'];
     const CUR_EXACT=['백화점','아울렛'];   // 채널관 — 정확히 일치할 때만(프로모션 오탐 방지)
@@ -1280,7 +1280,7 @@ function buildTabInsight() {
     row('비고정탭(하루 평균)', st=>num(st.avgNonFixed)+'개')+
     row('개인화·큐레이션 탭', st=>st.curation.length+'개')+
     `</tbody></table></div>`;
-  html+=`<div style="margin-top:6px;font-size:10px;color:#9ca3af">※ 고정탭 = 관측일 80% 이상 상시 노출 / 비고정탭 = 그 외(기획·시즌성) / 개인화·큐레이션 = For You·스페셜픽·월간홈픽·취향발견 類</div>`;
+  html+=`<div style="margin-top:6px;font-size:10px;color:#9ca3af">※ 전체기간 기준. 고정탭 = 관측일 80% 이상 상시 노출 / 비고정탭 = 그 외(기획·시즌성) / 개인화·큐레이션 = For You·스페셜픽·월간홈픽·취향발견·백화점·아울렛 類(고정탭이어도 함께 표기)</div>`;
   // 개인화·큐레이션 탭 목록
   html+=`<div style="margin-top:12px"><div style="font-size:11.5px;font-weight:800;color:#111;margin-bottom:6px">🎯 개인화·큐레이션 탭</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">`;
