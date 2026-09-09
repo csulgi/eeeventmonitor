@@ -157,7 +157,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 3사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-09-09 10:38<br>
+  <div class="hd-ts">최종 업데이트 2026-09-09 11:17<br>
     <a href="./briefing.html" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
@@ -1264,7 +1264,8 @@ function buildTabInsight() {
     // 개인화·큐레이션 탭 감지 (고정·비고정 무관, 누적 등장 탭 중)
     // 키워드형 + 카테고리 큐레이션 명시 탭(GS 뷰티#·패션Now)
     const CUR=['For You','포유','스페셜픽','월간홈픽','취향발견','추천','이달의','MD추천','큐레이션','뷰티#','패션Now'];
-    const curation=Object.keys(freq).filter(t=>CUR.some(k=>t.includes(k)));
+    const CUR_EXACT=['백화점','아울렛'];   // 채널관 — 정확히 일치할 때만(프로모션 오탐 방지)
+    const curation=Object.keys(freq).filter(t=>CUR.some(k=>t.includes(k)) || CUR_EXACT.includes(t));
     stat[site]={n, avgTabs, avgNonFixed, fixed:[...fixed].sort(),
       curation:[...new Set(curation)].sort()};
   });
