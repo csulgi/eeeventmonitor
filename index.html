@@ -157,7 +157,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 3사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-09-09 13:14<br>
+  <div class="hd-ts">최종 업데이트 2026-09-09 13:17<br>
     <a href="./briefing.html" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
@@ -1263,7 +1263,7 @@ function buildTabInsight() {
     const avgNonFixed=perDay.reduce((s,x)=>s+x.tabs.filter(t=>!fixed.has(t)).length,0)/n;
     // 개인화·큐레이션 탭 감지 (고정·비고정 무관, 누적 등장 탭 중)
     // 키워드형 + 카테고리 큐레이션 명시 탭(GS 뷰티#·패션Now)
-    const CUR=['For You','포유','스페셜픽','월간홈픽','취향발견','추천','이달의','MD추천','큐레이션','뷰티#','패션Now'];
+    const CUR=['For You','포유','스페셜픽','월간홈픽','취향발견','이달의','MD추천','큐레이션','뷰티#','패션Now'];
     const CUR_EXACT=['백화점','아울렛'];   // 채널관 — 정확히 일치할 때만(프로모션 오탐 방지)
     const curation=Object.keys(freq).filter(t=>CUR.some(k=>t.includes(k)) || CUR_EXACT.includes(t));
     stat[site]={n, avgTabs, avgNonFixed, fixed:[...fixed].sort(),
@@ -1291,11 +1291,13 @@ function buildTabInsight() {
     html+=`<div style="border:1px solid #e5e7eb;border-radius:8px;padding:9px 11px">
       <div style="font-size:11px;font-weight:800;color:${SITE_CFG[s].fg};margin-bottom:5px">${SITE_LABEL[s]}</div>${items}</div>`;
   });
-  html+=`</div></div>`;
+  html+=`</div>`;
+  html+=`<div style="margin-top:6px;font-size:10px;color:#9ca3af">※ 개수가 많다고 반드시 우위는 아님 — 큐레이션 탭이라도 기존 탭과 콘텐츠가 겹칠 수 있음(예: CJ '스페셜픽'은 '라이브쇼' 탭과 편성이 상당 부분 중복). 실효 큐레이션인지는 내용 차별성으로 봐야 함.</div>`;
+  html+=`</div>`;
   // 시사점
   const H=stat['Hmall'], C=stat['CJ온스타일'], G=stat['GS샵'];
   html+=`<div style="margin-top:12px;padding:10px 12px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:11.5px;line-height:1.6;color:#9a3412">
-    <b>💡 Hmall 시사점</b> — 개인화·큐레이션 탭이 CJ ${C.curation.length}개 · GS ${G.curation.length}개 대비 Hmall <b>${H.curation.length}개</b>${H.curation.length===0?' (사실상 부재)':''}. 반응 좋은 비고정탭을 상설 큐레이션관으로 키우면 CJ 대비 공백을 메울 수 있음.</div>`;
+    <b>💡 Hmall 시사점</b> — 개인화·큐레이션 탭이 CJ ${C.curation.length}개 · GS ${G.curation.length}개 대비 Hmall <b>${H.curation.length}개</b>${H.curation.length===0?' (사실상 부재)':''}. 다만 개수보다 <b>내용 차별성</b>이 관건 — CJ도 스페셜픽↔라이브쇼처럼 중복 편성이 있어, Hmall은 <b>겹치지 않는 테마형 큐레이션</b>(예: 시니어 건강·명품 선물)으로 차별화하면 유리.</div>`;
   el.innerHTML=html;
 }
 
