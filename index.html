@@ -157,7 +157,7 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 3사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-09-10 10:36<br>
+  <div class="hd-ts">최종 업데이트 2026-09-10 10:40<br>
     <a href="./briefing.html" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
@@ -1271,8 +1271,26 @@ function buildTabInsight() {
     const CUR=['For You','포유','스페셜픽','월간홈픽','취향발견','이달의','MD추천','큐레이션','뷰티#','패션Now'];
     const CUR_EXACT=['백화점','아울렛'];   // 채널관 — 정확히 일치할 때만(프로모션 오탐 방지)
     const curation=Object.keys(freq).filter(t=>CUR.some(k=>t.includes(k)) || CUR_EXACT.includes(t));
+    // 신규 안정화 탭 감지: 최신일에 있는 탭의 '현재 연속 유지일'(달력일) 계산
+    // 24일 연속=고정탭 신설 확정 / 7일+ 연속=관찰 알람 (처음부터 상시였던 기존 고정탭은 제외)
+    const CONFIRM_DAYS=24, ALERT_DAYS=7;
+    const last=perDay.length-1;
+    const newfix=[];
+    if(last>=0){
+      perDay[last].tabs.forEach(t=>{
+        let startIdx=last, priorAbs=false;
+        for(let i=last;i>=0;i--){
+          if(perDay[i].tabs.includes(t)) startIdx=i;
+          else { priorAbs=true; break; }
+        }
+        if(!priorAbs) return;   // 관측 시작부터 계속 = 기존 고정탭 → 제외
+        const span=Math.round((new Date(perDay[last].d)-new Date(perDay[startIdx].d))/864e5)+1;
+        if(span>=ALERT_DAYS) newfix.push({t, span, confirmed: span>=CONFIRM_DAYS});
+      });
+      newfix.sort((a,b)=>b.span-a.span);
+    }
     stat[site]={n, avgTabs, avgNonFixed, fixed:[...fixed].sort(),
-      curation:[...new Set(curation)].sort()};
+      curation:[...new Set(curation)].sort(), newfix};
   });
   const num=v=>v.toFixed(1);
   const row=(lbl,f)=>`<tr><td style="padding:5px 8px;font-weight:700;color:#374151;border-bottom:1px solid #f1f3f5">${lbl}</td>`+
@@ -1286,6 +1304,26 @@ function buildTabInsight() {
     row('개인화·큐레이션 탭', st=>st.curation.length+'개')+
     `</tbody></table></div>`;
   html+=`<div style="margin-top:6px;font-size:10px;color:#9ca3af">※ 전체기간 기준. 고정탭 = 관측일 80% 이상 상시 노출 / 비고정탭 = 그 외(기획·시즌성) / 개인화·큐레이션 = For You·스페셜픽·월간홈픽·취향발견·백화점·아울렛 類(고정탭이어도 함께 표기)</div>`;
+
+  // 🆕 고정탭 편입 관찰/확정 (연속 유지일 기반)
+  const anyNew=SITES.some(s=>(stat[s].newfix||[]).length);
+  html+=`<div style="margin-top:14px;padding:11px 13px;border:1px solid ${anyNew?'#fdba74':'#e5e7eb'};border-radius:9px;background:${anyNew?'#fff7ed':'#fafafa'}">
+    <div style="font-size:12px;font-weight:800;color:#111;margin-bottom:6px">🆕 고정탭 편입 관찰 <span style="font-weight:400;color:#9ca3af;font-size:10px">(연속 유지일 · 24일↑=신설 확정 / 7일↑=관찰)</span></div>`;
+  if(!anyNew){
+    html+=`<div style="font-size:11px;color:#9ca3af">관찰 중인 신규 안정화 탭이 없습니다.</div>`;
+  } else {
+    SITES.forEach(s=>{
+      const nf=stat[s].newfix||[]; if(!nf.length) return;
+      const chips=nf.map(x=>{
+        const conf=x.confirmed;
+        const bg=conf?'#16a34a':'#f59e0b', label=conf?'신설 확정':'관찰';
+        return `<span style="display:inline-block;margin:0 4px 4px 0;padding:2px 8px;border-radius:12px;font-size:10.5px;color:#fff;background:${bg}">${x.t} · ${x.span}일 연속 <b>${label}</b></span>`;
+      }).join('');
+      html+=`<div style="margin-bottom:5px"><span style="display:inline-block;min-width:78px;font-size:11px;font-weight:700;color:${SITE_CFG[s].fg}">${SITE_LABEL[s]}</span> ${chips}</div>`;
+    });
+  }
+  html+=`</div>`;
+
   // 개인화·큐레이션 탭 목록
   html+=`<div style="margin-top:12px"><div style="font-size:11.5px;font-weight:800;color:#111;margin-bottom:6px">🎯 개인화·큐레이션 탭</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">`;
