@@ -157,8 +157,8 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 4사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ · 롯데 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-09-14 09:38<br>
-    <a href="./briefing.html?v=202609140938" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
+  <div class="hd-ts">최종 업데이트 2026-09-14 10:10<br>
+    <a href="./briefing.html?v=202609141010" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
 <div class="maintab-bar">
@@ -1304,7 +1304,7 @@ function buildTabInsight() {
     row('비고정탭(하루 평균)', st=>num(st.avgNonFixed)+'개')+
     row('개인화·큐레이션 탭', st=>st.curation.length+'개')+
     `</tbody></table></div>`;
-  html+=`<div style="margin-top:6px;font-size:10px;color:#9ca3af">※ 전체기간 기준. 고정탭 = 관측일 80% 이상 상시 노출 / 비고정탭 = 그 외(기획·시즌성) / 개인화·큐레이션 = For You·스페셜픽·월간홈픽·취향발견·백화점·아울렛 類(고정탭이어도 함께 표기)</div>`;
+  html+=`<div style="margin-top:6px;font-size:10px;color:#9ca3af">※ 전체기간(${dates.length}일 관측) 기준. 고정탭 = 관측일 80% 이상 상시 노출 / 비고정탭 = 그 외(기획·시즌성) / 개인화·큐레이션 = For You·스페셜픽·월간홈픽·취향발견·백화점·아울렛 類(고정탭이어도 함께 표기)</div>`;
 
   // 🆕 고정탭 편입 관찰/확정 (연속 유지일 기반)
   const anyNew=SITES.some(s=>(stat[s].newfix||[]).length);
