@@ -157,14 +157,15 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 4사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ · 롯데 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-09-28 09:16<br>
-    <a href="./briefing.html?v=202609280916" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
+  <div class="hd-ts">최종 업데이트 2026-09-28 09:59<br>
+    <a href="./briefing.html?v=202609280959" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
 <div class="maintab-bar">
   <div class="maintab active" id="mtMonitor" onclick="switchMainTab('monitor')">행사 모니터링</div>
   <div class="maintab" id="mtCalendar" onclick="switchMainTab('calendar')">월간 편성표</div>
   <div class="maintab" id="mtHighlight" onclick="switchMainTab('highlight')">트렌드·인사이트</div>
+  <div class="maintab" id="mtShots" onclick="switchMainTab('shots')">탭 캡처</div>
 </div>
 
 <div class="wrap">
@@ -275,6 +276,17 @@ details[open] summary::before{content:'▼'}
   </div>
 
  </div><!-- /tab-monitor -->
+
+ <div id="tab-shots" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
+    <span style="font-size:13px;font-weight:800;color:#111">📸 프로모션 탭 캡처</span>
+    <select id="shotDate" onchange="renderShots()"
+      style="padding:6px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;font-weight:700;background:#fff;cursor:pointer"></select>
+    <span id="shotSites" style="display:flex;gap:5px;flex-wrap:wrap"></span>
+  </div>
+  <div style="font-size:10.5px;color:#9ca3af;margin-bottom:10px">매일 고정탭이 아닌 프로모션 탭을 전체화면 캡처 · <b>최근 30일만 보관</b>(이후 자동 삭제) · 필요한 캡처는 이미지를 눌러 연 뒤 저장하세요.</div>
+  <div id="shotGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px"></div>
+ </div><!-- /tab-shots -->
 
  <div id="tab-calendar" style="display:none">
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
@@ -1112,10 +1124,52 @@ function switchMainTab(tab) {
   document.getElementById('tab-monitor').style.display   = tab==='monitor'   ? '' : 'none';
   document.getElementById('tab-calendar').style.display  = tab==='calendar'  ? '' : 'none';
   document.getElementById('tab-highlight').style.display = tab==='highlight' ? '' : 'none';
+  document.getElementById('tab-shots').style.display     = tab==='shots'     ? '' : 'none';
+  document.getElementById('mtShots').classList.toggle('active', tab==='shots');
   document.getElementById('mtMonitor').classList.toggle('active', tab==='monitor');
   document.getElementById('mtCalendar').classList.toggle('active', tab==='calendar');
   document.getElementById('mtHighlight').classList.toggle('active', tab==='highlight');
   if(tab==='calendar') buildMonthCal();
+  if(tab==='shots') loadShots();
+}
+
+/* ── 📸 프로모션 탭 캡처 갤러리 (shots 브랜치 manifest.json) ── */
+const SHOT_BASE='https://raw.githubusercontent.com/csulgi/eeeventmonitor/shots/';
+let SHOT_MF=null, shotSite='전체';
+async function loadShots() {
+  const grid=document.getElementById('shotGrid');
+  if(SHOT_MF) { renderShots(); return; }
+  grid.innerHTML='<span style="font-size:11px;color:#9ca3af">불러오는 중…</span>';
+  try {
+    const r=await fetch(SHOT_BASE+'manifest.json?t='+Date.now());
+    SHOT_MF=await r.json();
+  } catch(e) {
+    grid.innerHTML='<span style="font-size:11px;color:#9ca3af">아직 캡처가 없습니다 (다음 수집부터 표시)</span>'; return;
+  }
+  const sel=document.getElementById('shotDate');
+  sel.innerHTML=Object.keys(SHOT_MF).sort().reverse().map(d=>`<option value="${d}">${d} (${SHOT_MF[d].length}장)</option>`).join('');
+  renderShots();
+}
+function renderShots() {
+  if(!SHOT_MF) return;
+  const d=document.getElementById('shotDate').value;
+  const items=SHOT_MF[d]||[];
+  const sites=['전체',...SITES.filter(s=>items.some(x=>x.site===s))];
+  if(!sites.includes(shotSite)) shotSite='전체';
+  document.getElementById('shotSites').innerHTML=sites.map(s=>
+    `<div class="chip${s===shotSite?' active':''}" onclick="shotSite='${s}';renderShots()">${s==='Hmall'?'현대(Hmall)':s}</div>`).join('');
+  const list=items.filter(x=>shotSite==='전체'||x.site===shotSite);
+  document.getElementById('shotGrid').innerHTML=list.length? list.map(x=>{
+    const fg=(SITE_CFG[x.site]||{}).fg||'#374151';
+    const url=SHOT_BASE+x.file;
+    return `<a href="${url}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;background:#fff;display:block">
+      <div style="height:300px;overflow:hidden;background:#f3f4f6"><img src="${url}" loading="lazy" alt="${x.tab}" style="width:100%;display:block"></div>
+      <div style="padding:7px 9px">
+        <div style="font-size:10.5px;font-weight:800;color:${fg}">${x.site==='Hmall'?'현대(Hmall)':x.site}${x.new?' <span style="background:#16a34a;color:#fff;border-radius:6px;padding:0 5px;font-size:9px;margin-left:3px">신규</span>':''}</div>
+        <div style="font-size:12px;font-weight:700;color:#111;margin-top:2px">${x.tab}</div>
+        ${x.small?`<div style="font-size:10px;color:#ef4444;margin-top:1px">${x.small}</div>`:''}
+      </div></a>`;
+  }).join('') : '<span style="font-size:11px;color:#9ca3af">이 날짜에 캡처가 없습니다</span>';
 }
 
 /* ── 🗓 월간 편성표 (엑셀형 매트릭스) ── */
