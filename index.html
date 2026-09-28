@@ -157,8 +157,8 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 4사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ · 롯데 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-09-28 11:27<br>
-    <a href="./briefing.html?v=202609281127" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
+  <div class="hd-ts">최종 업데이트 2026-09-28 11:31<br>
+    <a href="./briefing.html?v=202609281131" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
 <div class="maintab-bar">
@@ -1145,7 +1145,7 @@ function setShotMode(m) {
   document.getElementById('shotModeEvent').classList.toggle('active', m==='event');
   document.getElementById('shotModeHome').classList.toggle('active', m==='home');
   document.getElementById('shotDate').style.display = m==='event' ? '' : 'none';
-  document.getElementById('shotSites').style.display = m==='event' ? '' : 'none';
+  document.getElementById('shotSites').style.display = m==='event' ? 'flex' : 'none';
   document.getElementById('shotNote').innerHTML = m==='event'
     ? '매일 고정탭이 아닌 프로모션 탭을 전체화면 캡처 · <b>최근 30일만 보관</b>(이후 자동 삭제) · 필요한 캡처는 이미지를 눌러 연 뒤 저장하세요.'
     : 'GS·CJ·롯데 <b>홈탭</b>을 매일 전체화면 캡처 · <b>최근 7일만 보관</b> · 사이트별로 날짜를 나란히 놓아 전시 구성 변화를 비교하세요 (가로 스크롤).';
