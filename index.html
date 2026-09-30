@@ -157,8 +157,8 @@ details[open] summary::before{content:'▼'}
     <div class="hd-title">홈쇼핑 4사 <span class="accent">모바일 편성</span></div>
     <div class="hd-sub">Hmall · GS · CJ · 롯데 모바일웹 일일 현황</div>
   </div>
-  <div class="hd-ts">최종 업데이트 2026-09-30 10:59<br>
-    <a href="./briefing.html?v=202609301059" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
+  <div class="hd-ts">최종 업데이트 2026-09-30 11:11<br>
+    <a href="./briefing.html?v=202609301111" style="color:#9ecbff;text-decoration:none;font-weight:700">일일 브리핑 →</a>
   </div>
 </div>
 <div class="maintab-bar">
@@ -199,7 +199,7 @@ details[open] summary::before{content:'▼'}
     </details>
   </div>
 
-  <!-- 3사 비교 -->
+  <!-- 4사 비교 -->
   <div class="summary-box">
     <details>
       <summary>⚔️ 4사 비교</summary>
@@ -294,7 +294,7 @@ details[open] summary::before{content:'▼'}
 
  <div id="tab-calendar" style="display:none">
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px">
-    <span style="font-size:13px;font-weight:800;color:#111">🗓 월간 편성표 <span style="font-weight:400;color:#9ca3af;font-size:11px">(3사)</span></span>
+    <span style="font-size:13px;font-weight:800;color:#111">🗓 월간 편성표 <span style="font-weight:400;color:#9ca3af;font-size:11px">(4사)</span></span>
     <select id="calMonth" onchange="buildMonthCal()"
       style="padding:6px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;font-weight:700;background:#fff;cursor:pointer"></select>
     <span id="calLegend" style="display:flex;gap:6px;flex-wrap:wrap;font-size:10px"></span>
@@ -313,10 +313,10 @@ details[open] summary::before{content:'▼'}
     </details>
   </div>
 
-  <!-- 3사 메인탭 운영 비교 -->
+  <!-- 4사 메인탭 운영 비교 -->
   <div class="summary-box">
     <details open>
-      <summary>🧭 3사 메인탭 운영 비교 (고정 / 비고정 / 개인화·큐레이션 · 전체기간)</summary>
+      <summary>🧭 4사 메인탭 운영 비교 (고정 / 비고정 / 개인화·큐레이션 · 전체기간)</summary>
       <div id="tabInsightBody" style="margin-top:12px"></div>
     </details>
   </div>
@@ -975,7 +975,7 @@ function buildCatTrend() {
   document.getElementById('catTrend').innerHTML=cols+toggle;
 }
 
-/* ── ⚔️ 3사 비교 (통일된 조회 일자 selDate 기준) ── */
+/* ── ⚔️ 4사 비교 (통일된 조회 일자 selDate 기준) ── */
 function buildCompare() {
   const d=DATES.includes(selDate)?selDate:(DATES[0]||'');
   const dayRows=ALL_ROWS.filter(r=>r.date===d);
@@ -1237,7 +1237,7 @@ function buildMonthCal() {
   document.getElementById('calLegend').innerHTML=legendCats.map(c=>
     `<span style="display:inline-flex;align-items:center;gap:3px">
       <span style="width:11px;height:11px;border-radius:2px;background:${catColor(c)};display:inline-block"></span>${c}</span>`).join('');
-  // 3사 세로 스택 (현대 → GS → CJ)
+  // 4사 세로 스택 (현대 → GS → CJ → 롯데)
   const order=['Hmall','GS샵','CJ온스타일','롯데홈쇼핑'];
   wrap.innerHTML=order.map(s=>_siteCalTable(s,ym)).join(
     '<div style="height:18px"></div>');
@@ -1341,7 +1341,7 @@ function _siteCalTable(site, ym) {
     <tbody>${rows.join('')}</tbody></table></div>`;
 }
 
-/* ── 🧭 3사 메인탭 운영 비교 (TABS_DATA 기반, 자동 갱신) ── */
+/* ── 🧭 4사 메인탭 운영 비교 (TABS_DATA 기반, 자동 갱신) ── */
 function buildTabInsight() {
   const el=document.getElementById('tabInsightBody');
   if(!el) return;
@@ -1607,7 +1607,7 @@ async function buildWeatherReco() {
     if(cold.length>=1) alerts.push({t:`🥶 한파 (영하 ${cold.length}일)`, cats:['패션','리빙'], sug:'패딩·온열가전·난방텍스'});
     else if(chill.length>=2) alerts.push({t:`🍂 쌀쌀 (아침 8℃↓ ${chill.length}일)`, cats:['패션'], sug:'아우터·니트·환절기 이너'});
     if(drop) alerts.push({t:'📉 기온 급락 예보 (7℃↑ 하락)', cats:['패션'], sug:'환절기 의류·면역 건강식품'});
-    // 현재 3사 대응 현황 (최신 수집일 메인배너 기준)
+    // 현재 4사 대응 현황 (최신 수집일 메인배너 기준)
     const latest=DATES[0];
     const todayRows=ALL_ROWS.filter(r=>r.date===latest&&r.type==='main');
     function respond(cats) {
