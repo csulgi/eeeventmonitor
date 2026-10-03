@@ -1,0 +1,490 @@
+{
+ "2026-10-03": [
+  {
+   "site": "GS샵",
+   "tab": "내일도착",
+   "small": "휴일에도",
+   "new": false,
+   "file": "2026-10-03/GS_01.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "For You",
+   "small": "취향 콕!",
+   "new": false,
+   "file": "2026-10-03/CJ_02.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "타임특가",
+   "small": "단4시간",
+   "new": false,
+   "file": "2026-10-03/CJ_03.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "패션",
+   "small": "리뉴얼오픈",
+   "new": false,
+   "file": "2026-10-03/CJ_04.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "육아템마켓",
+   "small": "10%적립",
+   "new": false,
+   "file": "2026-10-03/CJ_05.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "여행관",
+   "small": "가을힐링",
+   "new": true,
+   "file": "2026-10-03/HM_06.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "TV베스트",
+   "small": "더블쇼핑어택",
+   "new": false,
+   "file": "2026-10-03/LT_07.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "쇼핑스위치온",
+   "small": "더블적립",
+   "new": false,
+   "file": "2026-10-03/LT_08.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "패션데이",
+   "small": "~10%적립",
+   "new": false,
+   "file": "2026-10-03/LT_09.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "닥스/헤지스",
+   "small": "브랜드릴레이",
+   "new": false,
+   "file": "2026-10-03/LT_10.jpg"
+  }
+ ],
+ "2026-10-02": [
+  {
+   "site": "CJ온스타일",
+   "tab": "For You",
+   "small": "취향 콕!",
+   "new": false,
+   "file": "2026-10-02/CJ_01.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "타임특가",
+   "small": "단4시간",
+   "new": false,
+   "file": "2026-10-02/CJ_02.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "패션",
+   "small": "리뉴얼오픈",
+   "new": false,
+   "file": "2026-10-02/CJ_03.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "육아템마켓",
+   "small": "10%적립",
+   "new": false,
+   "file": "2026-10-02/CJ_04.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "쇼핑백위크",
+   "small": "~28%쿠폰",
+   "new": false,
+   "file": "2026-10-02/HM_05.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "TV베스트",
+   "small": "더블쇼핑어택",
+   "new": false,
+   "file": "2026-10-02/LT_06.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "쇼핑스위치온",
+   "small": "더블적립",
+   "new": false,
+   "file": "2026-10-02/LT_07.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "한국금다이아",
+   "small": "브랜드릴레이",
+   "new": false,
+   "file": "2026-10-02/LT_08.jpg"
+  }
+ ],
+ "2026-10-01": [
+  {
+   "site": "GS샵",
+   "tab": "멤버십데이",
+   "small": "최대10%적립",
+   "new": false,
+   "file": "2026-10-01/GS_01.jpg"
+  },
+  {
+   "site": "GS샵",
+   "tab": "이달의뷰티",
+   "small": "",
+   "new": false,
+   "file": "2026-10-01/GS_02.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "For You",
+   "small": "취향 콕!",
+   "new": false,
+   "file": "2026-10-01/CJ_03.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "타임특가",
+   "small": "단4시간",
+   "new": false,
+   "file": "2026-10-01/CJ_04.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "패션",
+   "small": "리뉴얼오픈",
+   "new": false,
+   "file": "2026-10-01/CJ_05.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "육아템마켓",
+   "small": "10%적립",
+   "new": false,
+   "file": "2026-10-01/CJ_06.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "종근당건강",
+   "small": "단독 최저가",
+   "new": true,
+   "file": "2026-10-01/HM_07.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "스케쳐스",
+   "small": "20%적립",
+   "new": false,
+   "file": "2026-10-01/HM_08.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "TV베스트",
+   "small": "더블쇼핑어택",
+   "new": false,
+   "file": "2026-10-01/LT_09.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "쇼핑스위치온",
+   "small": "더블적립",
+   "new": true,
+   "file": "2026-10-01/LT_10.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "시몬스",
+   "small": "브랜드릴레이",
+   "new": false,
+   "file": "2026-10-01/LT_11.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "아모레",
+   "small": "카드7%",
+   "new": true,
+   "file": "2026-10-01/LT_12.jpg"
+  }
+ ],
+ "2026-09-30": [
+  {
+   "site": "CJ온스타일",
+   "tab": "레쁠레뜨",
+   "small": "최초!단독!",
+   "new": true,
+   "file": "2026-09-30/CJ_01.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "나인웨스트",
+   "small": "신규런칭",
+   "new": true,
+   "file": "2026-09-30/CJ_02.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "For You",
+   "small": "취향 콕!",
+   "new": false,
+   "file": "2026-09-30/CJ_03.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "타임특가",
+   "small": "단4시간",
+   "new": false,
+   "file": "2026-09-30/CJ_04.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "패션",
+   "small": "리뉴얼오픈",
+   "new": true,
+   "file": "2026-09-30/CJ_05.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "바니스뉴욕",
+   "small": "최초론칭",
+   "new": true,
+   "file": "2026-09-30/HM_06.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "쇼핑백위크",
+   "small": "~28%쿠폰",
+   "new": false,
+   "file": "2026-09-30/HM_07.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "라스트픽",
+   "small": "~12%적립",
+   "new": false,
+   "file": "2026-09-30/LT_08.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "아시아골드",
+   "small": "브랜드릴레이",
+   "new": true,
+   "file": "2026-09-30/LT_09.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "가을잡화명품",
+   "small": "1day할인",
+   "new": true,
+   "file": "2026-09-30/LT_10.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "홈쇼핑패션",
+   "small": "단하루 특가",
+   "new": true,
+   "file": "2026-09-30/LT_11.jpg"
+  }
+ ],
+ "2026-09-29": [
+  {
+   "site": "GS샵",
+   "tab": "매직딜데이",
+   "small": "7%+10%",
+   "new": false,
+   "file": "2026-09-29/GS_01.jpg"
+  },
+  {
+   "site": "GS샵",
+   "tab": "센소다인",
+   "small": "",
+   "new": false,
+   "file": "2026-09-29/GS_02.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "For You",
+   "small": "취향 콕!",
+   "new": false,
+   "file": "2026-09-29/CJ_03.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "타임특가",
+   "small": "단4시간",
+   "new": false,
+   "file": "2026-09-29/CJ_04.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "아울렛",
+   "small": "~90%OFF",
+   "new": false,
+   "file": "2026-09-29/CJ_05.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "디지털가전",
+   "small": "10%적립",
+   "new": false,
+   "file": "2026-09-29/CJ_06.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "뷰티풀데이즈",
+   "small": "10%적립",
+   "new": false,
+   "file": "2026-09-29/CJ_07.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "입생로랑",
+   "small": "NEW 블러셔",
+   "new": false,
+   "file": "2026-09-29/HM_08.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "쇼핑백위크",
+   "small": "~28%쿠폰",
+   "new": false,
+   "file": "2026-09-29/HM_09.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "라스트픽",
+   "small": "~12%적립",
+   "new": false,
+   "file": "2026-09-29/LT_10.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "뷰티데이즈",
+   "small": "~3만적립",
+   "new": false,
+   "file": "2026-09-29/LT_11.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "자코모",
+   "small": "브랜드릴레이",
+   "new": true,
+   "file": "2026-09-29/LT_12.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "F/W명품쇼핑",
+   "small": "카드7%",
+   "new": true,
+   "file": "2026-09-29/LT_13.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "폴햄",
+   "small": "백화점",
+   "new": true,
+   "file": "2026-09-29/LT_14.jpg"
+  }
+ ],
+ "2026-09-28": [
+  {
+   "site": "GS샵",
+   "tab": "센소다인",
+   "small": "베스트PICK",
+   "new": false,
+   "file": "2026-09-28/GS_01.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "For You",
+   "small": "취향 콕!",
+   "new": false,
+   "file": "2026-09-28/CJ_02.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "아울렛",
+   "small": "~90%OFF",
+   "new": false,
+   "file": "2026-09-28/CJ_03.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "해외명품",
+   "small": "~10%적립",
+   "new": false,
+   "file": "2026-09-28/CJ_04.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "디지털가전",
+   "small": "10%적립",
+   "new": true,
+   "file": "2026-09-28/CJ_05.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "tab": "브라데이",
+   "small": "10%적립",
+   "new": false,
+   "file": "2026-09-28/CJ_06.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "쇼핑백위크",
+   "small": "~28%쿠폰",
+   "new": false,
+   "file": "2026-09-28/HM_07.jpg"
+  },
+  {
+   "site": "Hmall",
+   "tab": "올리브오일",
+   "small": "1만원대",
+   "new": true,
+   "file": "2026-09-28/HM_08.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "라스트픽",
+   "small": "~12%적립",
+   "new": false,
+   "file": "2026-09-28/LT_09.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "뷰티데이즈",
+   "small": "~3만적립",
+   "new": false,
+   "file": "2026-09-28/LT_10.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "막스마라",
+   "small": "브랜드릴레이",
+   "new": true,
+   "file": "2026-09-28/LT_11.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "골드바특가",
+   "small": "카드7%",
+   "new": false,
+   "file": "2026-09-28/LT_12.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "tab": "나이키",
+   "small": "",
+   "new": false,
+   "file": "2026-09-28/LT_13.jpg"
+  }
+ ]
+}
