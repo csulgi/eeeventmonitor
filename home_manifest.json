@@ -1,0 +1,86 @@
+{
+ "2026-10-10": [
+  {
+   "site": "GS샵",
+   "file": "home/2026-10-10/GS.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "file": "home/2026-10-10/CJ.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "file": "home/2026-10-10/LT.jpg"
+  }
+ ],
+ "2026-10-08": [
+  {
+   "site": "GS샵",
+   "file": "home/2026-10-08/GS.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "file": "home/2026-10-08/CJ.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "file": "home/2026-10-08/LT.jpg"
+  }
+ ],
+ "2026-10-07": [
+  {
+   "site": "GS샵",
+   "file": "home/2026-10-07/GS.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "file": "home/2026-10-07/CJ.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "file": "home/2026-10-07/LT.jpg"
+  }
+ ],
+ "2026-10-06": [
+  {
+   "site": "GS샵",
+   "file": "home/2026-10-06/GS.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "file": "home/2026-10-06/CJ.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "file": "home/2026-10-06/LT.jpg"
+  }
+ ],
+ "2026-10-05": [
+  {
+   "site": "GS샵",
+   "file": "home/2026-10-05/GS.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "file": "home/2026-10-05/CJ.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "file": "home/2026-10-05/LT.jpg"
+  }
+ ],
+ "2026-10-04": [
+  {
+   "site": "GS샵",
+   "file": "home/2026-10-04/GS.jpg"
+  },
+  {
+   "site": "CJ온스타일",
+   "file": "home/2026-10-04/CJ.jpg"
+  },
+  {
+   "site": "롯데홈쇼핑",
+   "file": "home/2026-10-04/LT.jpg"
+  }
+ ]
+}
