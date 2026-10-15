@@ -286,6 +286,9 @@ details[open] summary::before{content:'▼'}
     </span>
     <select id="shotDate" onchange="renderShots()"
       style="padding:6px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:12px;font-weight:700;background:#fff;cursor:pointer"></select>
+    <button id="shotDownloadBtn" type="button" onclick="downloadShots()"
+      style="padding:7px 11px;border:1px solid #111827;border-radius:6px;background:#111827;color:#fff;font-size:12px;font-weight:700;cursor:pointer">이 날짜 ZIP 다운로드</button>
+    <span id="shotDownloadStatus" role="status" style="font-size:11px;color:#6b7280"></span>
     <span id="shotSites" style="display:flex;gap:5px;flex-wrap:wrap"></span>
   </div>
   <div id="shotNote" style="font-size:10.5px;color:#9ca3af;margin-bottom:10px">매일 고정탭이 아닌 프로모션 탭을 전체화면 캡처 · <b>최근 30일만 보관</b>(이후 자동 삭제) · 필요한 캡처는 이미지를 눌러 연 뒤 저장하세요.</div>
@@ -1145,6 +1148,8 @@ function setShotMode(m) {
   document.getElementById('shotModeEvent').classList.toggle('active', m==='event');
   document.getElementById('shotModeHome').classList.toggle('active', m==='home');
   document.getElementById('shotDate').style.display = m==='event' ? '' : 'none';
+  document.getElementById('shotDownloadBtn').style.display = m==='event' ? '' : 'none';
+  document.getElementById('shotDownloadStatus').style.display = m==='event' ? '' : 'none';
   document.getElementById('shotSites').style.display = m==='event' ? 'flex' : 'none';
   document.getElementById('shotNote').innerHTML = m==='event'
     ? '매일 고정탭이 아닌 프로모션 탭을 전체화면 캡처 · <b>최근 30일만 보관</b>(이후 자동 삭제) · 필요한 캡처는 이미지를 눌러 연 뒤 저장하세요.'
@@ -1193,6 +1198,10 @@ function renderShots() {
   if(!SHOT_MF) return;
   const d=document.getElementById('shotDate').value;
   const items=SHOT_MF[d]||[];
+  const downloadBtn=document.getElementById('shotDownloadBtn');
+  downloadBtn.textContent=`이 날짜 ZIP 다운로드 (${items.length}장)`;
+  downloadBtn.disabled=!items.length;
+  downloadBtn.style.opacity=items.length?'1':'0.55';
   const sites=['전체',...SITES.filter(s=>items.some(x=>x.site===s))];
   if(!sites.includes(shotSite)) shotSite='전체';
   document.getElementById('shotSites').innerHTML=sites.map(s=>
@@ -1210,6 +1219,67 @@ function renderShots() {
         ${x.small?`<div style="font-size:10px;color:#ef4444;margin-top:1px">${x.small}</div>`:''}
       </div></a>`;
   }).join('') : '<span style="font-size:11px;color:#9ca3af">이 날짜에 캡처가 없습니다</span>';
+}
+const SHOT_CRC_TABLE=(()=>{
+  const table=new Uint32Array(256);
+  for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;table[n]=c>>>0;}
+  return table;
+})();
+function shotCrc32(bytes) {
+  let crc=0xffffffff;
+  for(const byte of bytes) crc=SHOT_CRC_TABLE[(crc^byte)&255]^(crc>>>8);
+  return (crc^0xffffffff)>>>0;
+}
+function makeShotsZip(files) {
+  const encoder=new TextEncoder(), chunks=[], central=[];
+  const viewOf=(size,write)=>{const bytes=new Uint8Array(size);write(new DataView(bytes.buffer));return bytes;};
+  let offset=0, centralSize=0;
+  for(const file of files) {
+    const name=encoder.encode(file.name), data=new Uint8Array(file.data), crc=shotCrc32(data);
+    const local=viewOf(30,v=>{v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(6,0x0800,true);
+      v.setUint16(8,0,true);v.setUint16(10,0,true);v.setUint16(12,0x0021,true);v.setUint32(14,crc,true);
+      v.setUint32(18,data.length,true);v.setUint32(22,data.length,true);v.setUint16(26,name.length,true);v.setUint16(28,0,true);});
+    chunks.push(local,name,data);
+    const header=viewOf(46,v=>{v.setUint32(0,0x02014b50,true);v.setUint16(4,20,true);v.setUint16(6,20,true);
+      v.setUint16(8,0x0800,true);v.setUint16(10,0,true);v.setUint16(12,0,true);v.setUint16(14,0x0021,true);
+      v.setUint32(16,crc,true);v.setUint32(20,data.length,true);v.setUint32(24,data.length,true);
+      v.setUint16(28,name.length,true);v.setUint16(30,0,true);v.setUint16(32,0,true);v.setUint16(34,0,true);
+      v.setUint16(36,0,true);v.setUint32(38,0,true);v.setUint32(42,offset,true);});
+    central.push(header,name);centralSize+=header.length+name.length;
+    offset+=local.length+name.length+data.length;
+  }
+  const end=viewOf(22,v=>{v.setUint32(0,0x06054b50,true);v.setUint16(4,0,true);v.setUint16(6,0,true);
+    v.setUint16(8,files.length,true);v.setUint16(10,files.length,true);v.setUint32(12,centralSize,true);
+    v.setUint32(16,offset,true);v.setUint16(20,0,true);});
+  return new Blob([...chunks,...central,end],{type:'application/zip'});
+}
+async function downloadShots() {
+  const d=document.getElementById('shotDate').value, items=SHOT_MF?.[d]||[];
+  const btn=document.getElementById('shotDownloadBtn'), status=document.getElementById('shotDownloadStatus');
+  if(!items.length||btn.disabled) return;
+  btn.disabled=true;status.style.color='#6b7280';
+  let completed=0,next=0;
+  try {
+    const files=new Array(items.length);
+    const worker=async()=>{
+      while(next<items.length) {
+        const i=next++,item=items[i],response=await fetch(SHOT_BASE+item.file);
+        if(!response.ok) throw new Error(`${item.file} (HTTP ${response.status})`);
+        files[i]={name:`${d}/${String(item.file).split('/').pop()}`,data:await response.arrayBuffer()};
+        completed++;status.textContent=`이미지 받는 중 ${completed}/${items.length}`;
+      }
+    };
+    await Promise.all(Array.from({length:Math.min(4,items.length)},worker));
+    status.textContent='ZIP 만드는 중…';
+    const blob=makeShotsZip(files),url=URL.createObjectURL(blob),a=document.createElement('a');
+    a.href=url;a.download=`event-shots-${d}.zip`;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    status.textContent=`다운로드 시작 · ${items.length}장`;
+  } catch(error) {
+    status.style.color='#dc2626';status.textContent=`다운로드 실패: ${error.message}`;
+  } finally {
+    btn.disabled=false;btn.style.opacity='1';
+  }
 }
 
 /* ── 🗓 월간 편성표 (엑셀형 매트릭스) ── */
