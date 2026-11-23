@@ -1408,8 +1408,8 @@ function _siteCalTable(site, ym) {
       const v=data[d]; return evCell(v&&v.mains&&v.mains[i]);
     }).join('')+'</tr>');
   }
-  // 카드환인 (카드별 줄바꿈, 카드명+할인율만 압축)
-  rows.push('<tr>'+rowLabel('카드환인')+days.map(d=>{
+  // 카드할인 (카드별 줄바꿈, 카드명+할인율만 압축)
+  rows.push('<tr>'+rowLabel('카드할인')+days.map(d=>{
     const v=data[d]; if(!v||!v.card) return cell('');
     const items=v.card.split(' / ').map(s=>{
       const pct=(s.match(/~?\d+%/)||[''])[0];
